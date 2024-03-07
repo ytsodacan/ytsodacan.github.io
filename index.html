@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head><link href='https://fonts.googleapis.com/css?family=ADLaM Display' rel='stylesheet'></head>
+    <style>
+        body {
+            background-color:  lightblue;
+
+        }
+        form {
+        background-color: #6314bd;
+        width: 500px;
+        height: 55px;
+        border-radius: 5px;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        font-family: 'ADLaM Display';font-size: 22px;
+      }
+
+      input {
+        all: unset;
+        font: 16px system-ui;
+        color: #fff;
+        height: 100%;
+        width: 100%;
+        padding: 6px 10px;
+      }
+
+      ::placeholder {
+        color: #fff;
+        opacity: 0.7; 
+      }
+
+      svg {
+        color: #fff;
+        fill: currentColor;
+        width: 24px;
+        height: 24px;
+        padding: 10px;
+      }
+
+      button {
+        all: unset;
+        cursor: pointer;
+        width: 44px;
+        height: 44px;
+        border-radius: 1;
+        font-family: 'ADLaM Display';font-size: 22px;
+      }
+
+    div  {
+      width: 120;
+      height: 70;
+      }
+      #appButton {
+  padding: 10px 20px;
+}
+
+#appBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  background-color: #fff;
+  border: 2px solid #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+#appHeader {
+  background-color: #333;
+  padding: 5px 10px;
+  color: #fff;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#closeButton {
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+
+#appContent {
+  height: 100%;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.docu {
+  background-color: green;
+  font-family: 'ADLaM Display';font-size: 22px;
+}
+    </style>
+    <body>
+      <div id="appBox">
+        <div id="appHeader">
+          <docu><button id="closeButton" class="button docu"  style="background-color: green;">×</button></docu>
+        </div>
+        <div id="appContent">
+          <iframe src="https://docuwriter.neocities.org/" frameborder="0"></iframe>
+        </div>
+      </div>
+        <form role="search" id="form">
+            <b>Hub Launcher</b>
+            <input type="search" id="query" name="q" placeholder="Search Google" aria-label="Search through site content">
+            <button>
+              <svg viewBox="0 0 1024 1024"><path class="path1" d="M848.471 928l-263.059-263.059c-48.941 36.706-110.118 55.059-177.412 55.059-171.294 0-312-140.706-312-312s140.706-312 312-312c171.294 0 312 140.706 312 312 0 67.294-24.471 128.471-55.059 177.412l263.059 263.059-79.529 79.529zM189.623 408.078c0 121.364 97.091 218.455 218.455 218.455s218.455-97.091 218.455-218.455c0-121.364-103.159-218.455-218.455-218.455-121.364 0-218.455 97.091-218.455 218.455z"></path></svg>
+            </button>
+          </form>
+          <div>
+            <button id="appButton">Docuwriter</button>
+        </div>
+          <div id="content" class=""></div>
+          <script>
+            const f = document.getElementById('form');
+            const q = document.getElementById('query');
+            const google = 'https://www.google.com/search?q=';
+      
+            function submitted(event) {
+              event.preventDefault();
+              const url = google + '+' + q.value;
+              const win = window.open(url, '_blank');
+              win.focus();
+            }
+      
+            f.addEventListener('submit', submitted);
+
+
+
+
+            const appButton = document.getElementById("appButton");
+const appBox = document.getElementById("appBox");
+const closeButton = document.getElementById("closeButton");
+
+// Open the app box when the button is clicked
+appButton.addEventListener("click", function() {
+  appBox.style.display = "block";
+});
+
+// Close the app box when the close button is clicked
+closeButton.addEventListener("click", function() {
+  appBox.style.display = "none";
+});
+
+// Make the app box movable
+appHeader.addEventListener("mousedown", function(e) {
+  let offsetX = e.clientX - appBox.offsetLeft;
+  let offsetY = e.clientY - appBox.offsetTop;
+
+  function moveBox(e) {
+    appBox.style.left = e.clientX - offsetX + "px";
+    appBox.style.top = e.clientY - offsetY + "px";
+  }
+
+  function stopMoving() {
+    document.removeEventListener("mousemove", moveBox);
+    document.removeEventListener("mouseup", stopMoving);
+  }
+
+  document.addEventListener("mousemove", moveBox);
+  document.addEventListener("mouseup", stopMoving);
+});
+          </script>
+    </body>
+</html>
