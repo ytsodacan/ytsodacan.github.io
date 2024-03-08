@@ -100,9 +100,9 @@ iframe {
   background-color: green;
   font-family: 'ADLaM Display';font-size: 22px;
     background-color: lime;
-        width: 500px;
+        width: 40px;
         height: 55px;
-        border-radius: 5px;
+        border-radius: 100%;
         display:flex;
         flex-direction:row;
         align-items:center;
@@ -112,7 +112,7 @@ iframe {
     <body>
       <div id="appBox">
         <div id="appHeader">
-          <docu><button id="closeButton"  >×</button>
+          <button id="closeButton"  >×</button>
         </div>
         <div id="appContent">
           <iframe src="https://docuwriter.neocities.org/" frameborder="0"></iframe>
@@ -126,8 +126,9 @@ iframe {
             </button>
           </form>
           <div>
-            <button id="appButton" class="docu">Docuwriter</button>
-        </div>
+            <button id="appButton" class="docu"><img src="docs1.png" style="width: 40px; height: 50px; position: fixed;"></img></button>
+        
+          </div>
           <div id="content" class=""></div>
           <script>
             const f = document.getElementById('form');
