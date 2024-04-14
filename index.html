@@ -1,104 +1,268 @@
-﻿<html>
-	<head>
-		<link rel="stylesheet" href="css/game.css">
-	</head>
-	<body>
-		<div id="stage"></div>
-		<div id="modal_shade"></div>
-		<div class="overlay" id="warning">
-			<div dir="rtl">ای بابا!</div>
-			<div dir="rtl">
-			your browser doesn't support webgl.<br>
-			try a different browser or computer?<br>
-				<br>
-				مرورگر شما مرخص است! از یه مرورگر و یا کامپیوتر دیگه استفاده کنید!
-			</div>
-		</div>
-		<div class="overlay" id="paused">
-			<div>paused</div>
-			<div dir="rtl">
-			click anywhere to resume<br>
-				برای بازگشت رو یه جا رو کلیک کن!
-			</div>
-		</div>
-	</body>
+<!DOCTYPE html>
+<html>
+    <head><link href='https://fonts.googleapis.com/css?family=ADLaM Display' rel='stylesheet'></head>
+    <style>
+        body {
+            background-color:  lightblue;
+
+        }
+        form {
+        background-color: #6314bd;
+        width: 500px;
+        height: 55px;
+        border-radius: 5px;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        font-family: 'ADLaM Display';font-size: 22px;
+      }
+
+      input {
+        all: unset;
+        font: 16px system-ui;
+        color: #fff;
+        height: 100%;
+        width: 100%;
+        padding: 6px 10px;
+      }
+
+      ::placeholder {
+        color: #fff;
+        opacity: 0.7; 
+      }
+
+      svg {
+        color: #fff;
+        fill: currentColor;
+        width: 24px;
+        height: 24px;
+        padding: 10px;
+      }
+
+      button {
+        all: unset;
+        cursor: pointer;
+        width: 44px;
+        height: 44px;
+        border-radius: 1;
+        font-family: 'ADLaM Display';font-size: 22px;
+      }
+
+    div  {
+      width: 120;
+      height: 70;
+      }
+      #appButton {
+  padding: 10px 20px;
+}
+
+#appBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  background-color: #fff;
+  border: 2px solid #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+#appHeader {
+  background-color: #333;
+  padding: 5px 10px;
+  color: #fff;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#closeButton {
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+
+#appContent {
+  height: 100%;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.docu {
+  background-color: green;
+  font-family: 'ADLaM Display';font-size: 22px;
+    background-color: lime;
+        width: 250px;
+        height: 55px;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+    
+}
+
+.start-box {
+      display: none;
+      border: 1px solid black;
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      height: 400px;
+      background-color: #6314bd;
+      font-family: 'ADLaM Display';
+    }
+
+    h1 {
+      text-align: center;
+    }
+    #weather-info {
+      margin: 0 auto;
+      width: 400px;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+    </style>
+    <body>
+      <div class>
+      <button onclick="toggleStartBox()" style="background-color: #6314bd;">HL</button>
+      <div id="appBox">
+        <div id="appHeader">
+          <button id="closeButton"  >×</button>
+        </div class="Search">
+        <div id="appContent">
+          <iframe src="https://docuwriter.neocities.org/" frameborder="0"></iframe>
+        </div>
+      </div>
+      <div>
+        <form role="search" id="form">
+            <input type="search" id="query" name="q" placeholder="Search Google" aria-label="Search through site content">
+            <button>
+              <svg viewBox="0 0 1024 1024"><path class="path1" d="M848.471 928l-263.059-263.059c-48.941 36.706-110.118 55.059-177.412 55.059-171.294 0-312-140.706-312-312s140.706-312 312-312c171.294 0 312 140.706 312 312 0 67.294-24.471 128.471-55.059 177.412l263.059 263.059-79.529 79.529zM189.623 408.078c0 121.364 97.091 218.455 218.455 218.455s218.455-97.091 218.455-218.455c0-121.364-103.159-218.455-218.455-218.455-121.364 0-218.455 97.091-218.455 218.455z"></path></svg>
+            </button>
+          </form>
+        </div>
+        </div></div>
+          <div>
+        
+          </div>
+                    <!-- Start box element -->
+                    <div id="startBox" class="start-box">
+                      <button id="appButton" class="docu">Document Writer</button>
+                           <p>Location: <span id="location"></span></p>
+                      <p>Temperature: <span id="temperature"></span></p>
+                      <p>Forecast: <span id="forecast"></span></p>
+                      <p>Rain Chances: <span id="rain-chances"></span></p>
+
+                    </div>
+          <div id="content" class=""></div>
+          <script>
+            const f = document.getElementById('form');
+            const q = document.getElementById('query');
+            const google = 'https://www.google.com/search?q=';
+      
+            function submitted(event) {
+              event.preventDefault();
+              const url = google + '+' + q.value;
+              const win = window.open(url, '_blank');
+              win.focus();
+            }
+      
+            f.addEventListener('submit', submitted);
+
+
+
+
+            const appButton = document.getElementById("appButton");
+const appBox = document.getElementById("appBox");
+const closeButton = document.getElementById("closeButton");
+
+// Open the app box when the button is clicked
+appButton.addEventListener("click", function() {
+  appBox.style.display = "block";
+});
+
+// Close the app box when the close button is clicked
+closeButton.addEventListener("click", function() {
+  appBox.style.display = "none";
+});
+
+// Make the app box movable
+appHeader.addEventListener("mousedown", function(e) {
+  let offsetX = e.clientX - appBox.offsetLeft;
+  let offsetY = e.clientY - appBox.offsetTop;
+
+  function moveBox(e) {
+    appBox.style.left = e.clientX - offsetX + "px";
+    appBox.style.top = e.clientY - offsetY + "px";
+  }
+
+  function stopMoving() {
+    document.removeEventListener("mousemove", moveBox);
+    document.removeEventListener("mouseup", stopMoving);
+  }
+
+  document.addEventListener("mousemove", moveBox);
+  document.addEventListener("mouseup", stopMoving);
+});
+
+function toggleStartBox() {
+      var startBox = document.getElementById("startBox");
+      startBox.style.display = (startBox.style.display === "none") ? "block" : "none";
+    }
+
+    function closePage() {
+      window.close(); // This closes the current window or tab
+    }
+
+
+
+
+    
+
+    navigator.geolocation.getCurrentPosition(success, error);
+
+function success(position) {
+  var latitude = position.coords.latitude;
+  var longitude = position.coords.longitude;
+
+  // Make a GET request to the OpenWeatherMap API
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', `https://api.openweathermap.org/data/2.5/weather?lat=${-32.718739}&lon=${152.108719}&appid=5bb9a13d45efad7f455ac4084d749a76`, true);
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      var data = JSON.parse(xhr.responseText);
+      var location = data.name;
+      var temperature = Math.round(data.main.temp - 273.15) + "°C";
+      var forecast = data.weather[0].main;
+      var rainChances = data.weather[0].description;
+
+      // Display the weather information
+      document.getElementById("location").textContent = location;
+      document.getElementById("temperature").textContent = temperature;
+      document.getElementById("forecast").textContent = forecast;
+      document.getElementById("rain-chances").textContent = rainChances;
+    }
+  };
+
+  xhr.send();
+}
+
+function error(err) {
+  console.warn(`ERROR(${err.code}): ${err.message}`);
+}
+
+
+
+
+
+          </script>
+    </body>
 </html>
-
-<!-- External Libraries -->
-<script src="js/lib/pixi.min.js"></script>
-<script src="js/lib/howler.js"></script>
-<script src="js/lib/stats.min.js"></script>
-<script>var createjs = window;</script>
-<script src="js/lib/tweenjs-0.6.2.min.js"></script>
-<script>Ticker.framerate=60; Ticker.paused=true;</script>
-<script src="js/lib/helpers.js"></script>
-
-<!-- Text Strings -->
-<script src="js/textStrings.js"></script>
-
-<!-- Core Engine Code -->
-<script src="js/core/Game.js"></script>
-<script src="js/core/SceneManager.js"></script>
-<script src="js/core/Scene.js"></script>
-
-<!-- Main Game Scene Code -->
-<script src="js/game/World.js"></script>
-<script src="js/game/Camera.js"></script>
-<script src="js/game/Director.js"></script>
-<script src="js/game/Peep.js"></script>
-<script src="js/game/TV.js"></script>
-<script src="js/game/AnimationProp.js"></script>
-<script src="js/game/ScreenShake.js"></script>
-<script src="js/game/ScreenZoomOut.js"></script>
-<script src="js/game/Gore.js"></script>
-<script src="js/game/DeadBody.js"></script>
-<script src="js/game/Blood.js"></script>
-
-<!-- Peeps -->
-<script src="js/peeps/NormalPeep.js"></script>
-<script src="js/peeps/CrazyPeep.js"></script>
-<script src="js/peeps/NervousPeep.js"></script>
-<script src="js/peeps/SnobbyPeep.js"></script>
-<script src="js/peeps/AngryPeep.js"></script>
-<script src="js/peeps/HatPeep.js"></script>
-<script src="js/peeps/LoverPeep.js"></script>
-<script src="js/peeps/ProtestAnim.js"></script>
-<script src="js/peeps/HelpingAnim.js"></script>
-<script src="js/peeps/HappyWeirdoPeep.js"></script>
-<script src="js/peeps/EvilHatPeep.js"></script>
-<script src="js/peeps/PanicPeep.js"></script>
-<script src="js/peeps/MurderPeep.js"></script>
-
-<!-- Misc Crap -->
-<script src="js/misc/Candlelight.js"></script>
-<script src="js/misc/LoversWatching.js"></script>
-<script src="js/misc/Cricket.js"></script>
-<script src="js/misc/Cursor.js"></script>
-
-<!-- Scenes -->
-<script src="js/scenes/Scene_Preloader.js"></script>
-<script src="js/scenes/Scene_Quote.js"></script>
-<script src="js/scenes/Scene_Game.js"></script>
-<script src="js/scenes/Scene_Credits.js"></script>
-<script src="js/scenes/Scene_Post_Credits.js"></script>
-<script src="js/scenes/Scene_Post_Post_Credits.js"></script>
-<script src="js/scenes/Scene_EndPrototype.js"></script>
-<script src="js/scenes/Act_I.js"></script>
-<script src="js/scenes/Act_II.js"></script>
-<script src="js/scenes/Act_III.js"></script>
-<script src="js/scenes/Scene_Meta.js"></script>
-
-<!-- Game Scripts -->
-<script>
-Game.stats = false;
-window.onload = function(){
-	try{
-		Game.init();
-		//Game.init("Game");
-	}catch(e){
-		document.getElementById("warning").style.display = "block";
-	}
-};
-window.SHARE_TEXT = 'همین الان یه بازی خیلی خفن رو بازی کردم'
-window.SHARE_URL = "";
-</script>
