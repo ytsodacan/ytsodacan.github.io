@@ -1,0 +1,5 @@
+<?xml version='1.0' ?>
+<Dialogues>
+	<Dialogue id='place' key_next='32' key_faster='88' key_up='38' key_down='40' first_line_id='0' typing_sound ='typing'>
+		<TextLine id='0' id_next='1'>Hello, I am Sahasrahla. This is a demonstration of a Zelda style dialogue system. Press Space to continue to the next part of dialogue.</TextLine>
+</Dialogues>
