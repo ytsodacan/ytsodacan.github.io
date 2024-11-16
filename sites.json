@@ -1,6 +1,34 @@
 [
     {
         "name": "Google",
-        "url": "https://www.google.com"
+        "url": "https://www.google.com",
+        "mods": [
+            {
+                "name": "Mod 1",
+                "description": "Description of Mod 1 for Google.",
+                "url": "https://example.com/mod1"
+            },
+            {
+                "name": "Mod 2",
+                "description": "Description of Mod 2 for Google.",
+                "url": "https://example.com/mod2"
+            }
+        ]
+    },
+    {
+        "name": "Example Site",
+        "url": "https://example.com",
+        "mods": [
+            {
+                "name": "Mod 1",
+                "description": "Description of Mod 1 for Example Site.",
+                "url": "https://example.com/mod1"
+            },
+            {
+                "name": "Mod 2",
+                "description": "Description of Mod 2 for Example Site.",
+                "url": "https://example.com/mod2"
+            }
+        ]
     }
 ]
