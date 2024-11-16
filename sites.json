@@ -2,6 +2,7 @@
     {
         "name": "Google",
         "url": "https://www.google.com",
+        "favicon": "https://www.google.com/favicon.ico", 
         "mods": [
             {
                 "name": "Mod 1",
@@ -18,6 +19,7 @@
     {
         "name": "Example Site",
         "url": "https://example.com",
+        "favicon": "https://example.com/favicon.ico", 
         "mods": [
             {
                 "name": "Mod 1",
