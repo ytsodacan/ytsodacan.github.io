@@ -1,36 +1,41 @@
 [
     {
-        "name": "Google",
-        "url": "https://www.google.com",
-        "favicon": "https://www.google.com/favicon.ico", 
-        "mods": [
-            {
-                "name": "Mod 1",
-                "description": "Description of Mod 1 for Google.",
-                "url": "https://example.com/mod1"
-            },
-            {
-                "name": "Mod 2",
-                "description": "Description of Mod 2 for Google.",
-                "url": "https://example.com/mod2"
-            }
-        ]
+      "name": "Google",
+      "icon": "https://google.com/favicon.ico",
+      "downloadUrl": "https://ytsodacan.github.io/SodaModV1.1%20(2).zip",
+      "mods": [
+        {
+          "name": "Mod 1",
+          "description": "A cool mod that adds new features to the game.",
+          "icon": "https://example.com/mod1-icon.png",
+          "downloadUrl": "https://example.com/download-mod1.zip"
+        },
+        {
+          "name": "Mod 2",
+          "description": "A mod that changes the graphics and enhances visuals.",
+          "icon": "https://example.com/mod2-icon.png",
+          "downloadUrl": "https://example.com/download-mod2.zip"
+        }
+      ]
     },
     {
-        "name": "Example Site",
-        "url": "https://example.com",
-        "favicon": "https://example.com/favicon.ico", 
-        "mods": [
-            {
-                "name": "Mod 1",
-                "description": "Description of Mod 1 for Example Site.",
-                "url": "https://example.com/mod1"
-            },
-            {
-                "name": "Mod 2",
-                "description": "Description of Mod 2 for Example Site.",
-                "url": "https://example.com/mod2"
-            }
-        ]
+      "name": "Site 2",
+      "icon": "https://example.com/icon2.png",
+      "downloadUrl": "https://example.com/download-site2-loader.zip",
+      "mods": [
+        {
+          "name": "Mod A",
+          "description": "Adds new gameplay mechanics.",
+          "icon": "https://example.com/moda-icon.png",
+          "downloadUrl": "https://example.com/download-moda.zip"
+        },
+        {
+          "name": "Mod B",
+          "description": "A mod that customizes the UI.",
+          "icon": "https://example.com/modb-icon.png",
+          "downloadUrl": "https://example.com/download-modb.zip"
+        }
+      ]
     }
-]
+  ]
+  
