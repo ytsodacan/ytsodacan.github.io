@@ -17,7 +17,7 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        let ball = { x: canvas.width / 2, y: canvas.height - 50, radius: 20, dy: 0 };
+        let ball = { x: canvas.width / 2, y: canvas.height - 50, radius: 20, dy: 0, dx: 0 };
         let gravity = 0.5;
         let jumpPower = -10;
         let platforms = [
@@ -42,6 +42,7 @@
         function update() {
             ball.dy += gravity;
             ball.y += ball.dy;
+            ball.x += ball.dx;
             
             // Collision detection
             platforms.forEach(p => {
@@ -74,6 +75,10 @@
             if (ball.dy === 0) {
                 ball.dy = jumpPower;
             }
+        });
+
+        canvas.addEventListener("mousemove", (event) => {
+            ball.x = event.clientX;
         });
 
         gameLoop();
