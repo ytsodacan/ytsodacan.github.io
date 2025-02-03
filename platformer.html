@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Platformer</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { background: lightblue; display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let ball = { x: canvas.width / 2, y: canvas.height - 50, radius: 20, dy: 0 };
+        let gravity = 0.5;
+        let jumpPower = -10;
+        let platforms = [
+            { x: 100, y: canvas.height - 50, width: 200, height: 10 },
+            { x: 350, y: canvas.height - 120, width: 200, height: 10 },
+            { x: 600, y: canvas.height - 200, width: 200, height: 10 }
+        ];
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPlatforms() {
+            ctx.fillStyle = "brown";
+            platforms.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
+        }
+
+        function update() {
+            ball.dy += gravity;
+            ball.y += ball.dy;
+            
+            // Collision detection
+            platforms.forEach(p => {
+                if (
+                    ball.y + ball.radius >= p.y && 
+                    ball.y + ball.radius - ball.dy < p.y && 
+                    ball.x > p.x && ball.x < p.x + p.width
+                ) {
+                    ball.y = p.y - ball.radius;
+                    ball.dy = 0;
+                }
+            });
+            
+            // Prevent falling off
+            if (ball.y > canvas.height) {
+                ball.y = canvas.height - 50;
+                ball.dy = 0;
+            }
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+            drawPlatforms();
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener("click", () => {
+            if (ball.dy === 0) {
+                ball.dy = jumpPower;
+            }
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
