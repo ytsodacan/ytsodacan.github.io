@@ -31,14 +31,13 @@
         }
 
         function update() {
-            if (isJumping) {
-                ball.dy += gravity;
-                ball.y += ball.dy;
-                if (ball.y >= canvas.height - ball.radius) {
-                    ball.y = canvas.height - ball.radius;
-                    ball.dy = 0;
-                    isJumping = false;
-                }
+            ball.dy += gravity;
+            ball.y += ball.dy;
+            
+            if (ball.y >= canvas.height - ball.radius) {
+                ball.y = canvas.height - ball.radius;
+                ball.dy = 0;
+                isJumping = false;
             }
         }
 
