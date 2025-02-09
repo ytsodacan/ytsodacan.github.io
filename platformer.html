@@ -7,10 +7,16 @@
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { background: lightblue; display: block; }
+        #editorControls { position: fixed; top: 10px; left: 10px; z-index: 10; background-color: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
+    <div id="editorControls">
+        <button id="toggleEditorBtn">Toggle Editor</button>
+        <p>Click to create platforms. Drag to move them.</p>
+    </div>
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
@@ -21,6 +27,15 @@
         let gravity = 0.5;
         let jumpPower = -10;
         let isJumping = false;
+        let isEditing = false; // Toggle for level editor mode
+        let selectedPlatform = null; // Track which platform is being dragged
+        let dragOffset = { x: 0, y: 0 };
+        
+        let platforms = [
+            { x: 100, y: canvas.height - 150, width: 200, height: 10 },
+            { x: 400, y: canvas.height - 250, width: 200, height: 10 },
+            { x: 700, y: canvas.height - 350, width: 200, height: 10 }
+        ];
 
         function drawBall() {
             ctx.beginPath();
@@ -30,19 +45,44 @@
             ctx.closePath();
         }
 
+        function drawPlatforms() {
+            ctx.fillStyle = "brown";
+            platforms.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
+        }
+
+        function drawGrassFloor() {
+            ctx.fillStyle = "green";
+            ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+        }
+
         function update() {
             ball.dy += gravity;
             ball.y += ball.dy;
             
-            if (ball.y >= canvas.height - ball.radius) {
-                ball.y = canvas.height - ball.radius;
+            if (ball.y >= canvas.height - ball.radius - 20) {
+                ball.y = canvas.height - ball.radius - 20;
                 ball.dy = 0;
                 isJumping = false;
             }
+
+            platforms.forEach(p => {
+                if (
+                    ball.y + ball.radius >= p.y &&
+                    ball.y + ball.radius <= p.y + p.height &&
+                    ball.x >= p.x && ball.x <= p.x + p.width &&
+                    ball.dy > 0
+                ) {
+                    ball.dy = 0;
+                    isJumping = false;
+                    ball.y = p.y - ball.radius;
+                }
+            });
         }
 
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlatforms();
+            drawGrassFloor();
             drawBall();
             update();
             requestAnimationFrame(gameLoop);
@@ -58,7 +98,62 @@
         canvas.addEventListener("mousemove", (event) => {
             ball.x = event.clientX;
         });
+                // Level editor functionality
+                function toggleEditor() {
+            isEditing = !isEditing;
+            selectedPlatform = null; // Deselect any platform
+        }
 
+        function createPlatform(x, y) {
+            const width = 200;
+            const height = 10;
+            platforms.push({ x, y, width, height });
+        }
+
+        function selectPlatform(x, y) {
+            selectedPlatform = platforms.find(p => 
+                x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height
+            );
+            if (selectedPlatform) {
+                dragOffset.x = x - selectedPlatform.x;
+                dragOffset.y = y - selectedPlatform.y;
+            }
+        }
+
+        function movePlatform(x, y) {
+            if (selectedPlatform) {
+                selectedPlatform.x = x - dragOffset.x;
+                selectedPlatform.y = y - dragOffset.y;
+            }
+        }
+
+        // Event listeners
+        canvas.addEventListener("click", (event) => {
+            if (isEditing && !selectedPlatform) {
+                const { x, y } = event;
+                createPlatform(x, y); // Create platform only if no platform is selected
+            }
+        });
+
+        canvas.addEventListener("mousemove", (event) => {
+            ball.x = event.clientX;
+            if (isEditing && selectedPlatform) {
+                movePlatform(event.clientX, event.clientY); // Move platform if one is selected
+            }
+        });
+
+        canvas.addEventListener("mousedown", (event) => {
+            if (isEditing) {
+                selectPlatform(event.clientX, event.clientY); // Select platform to move
+            }
+        });
+
+        canvas.addEventListener("mouseup", () => {
+            selectedPlatform = null; // Deselect platform after moving
+        });
+
+        // Toggle editor mode
+        document.getElementById("toggleEditorBtn").addEventListener("click", toggleEditor);
         gameLoop();
     </script>
 </body>
