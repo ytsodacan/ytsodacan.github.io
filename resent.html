@@ -61,20 +61,9 @@
       } else {
         errorMessage.style.display = "none";
         document.getElementById("loginBox").style.display = "none";
-        console.log("Login successful, creating iframe...");
+        localStorage.setItem('login', 'sentfromlogin');
+        window.location.href = 'https://ytsodacan.github.io/game';
 
-        // Dynamically create the iframe after login
-        
-        const iframe = document.createElement("iframe");
-        iframe.src = "https://ytsodacan.github.io/resent";
-        iframe.style.position = "absolute";
-        iframe.style.top = "0";
-        iframe.style.left = "0";
-        iframe.style.width = "100%";
-        iframe.style.height = "100%";
-        iframe.style.border = "none";
-        document.body.appendChild(iframe);
-        console.log("Iframe appended");
       }
     }
   </script>
