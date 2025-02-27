@@ -49,7 +49,6 @@
     const params = new URLSearchParams(window.location.search);
     if (params.get('iframe') === 'true') {
       // In the game view: Display your game content.
-      // Replace this with your actual game initialization code.
       document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:50px;">Game goes here. (Starting at 0)</h1>';
     } else {
       // In the login view: Create the login UI.
@@ -70,7 +69,8 @@
       const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1enJua3piZGVuaGNheHZtb2pkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2Mjg2MjUsImV4cCI6MjA1NjIwNDYyNX0.azOKL2Ds58UO98cCUkQNeNVPUT3necSgCDOOaMWCo94";
       const client = supabase.createClient(supabaseUrl, supabaseKey);
     
-      async function login() {
+      // Expose the login function globally.
+      window.login = async function() {
         console.log("Login button clicked");
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
@@ -91,7 +91,6 @@
     
           // Create an iframe with ?iframe=true so it loads the game view.
           const iframe = document.createElement("iframe");
-          // Construct the URL using the current origin and path, appending ?iframe=true
           iframe.src = window.location.origin + window.location.pathname + "?iframe=true";
           document.body.appendChild(iframe);
           console.log("Iframe appended");
