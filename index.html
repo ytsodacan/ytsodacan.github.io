@@ -20,21 +20,33 @@
             width: 90%;
             max-width: 1000px;
             background: rgba(255, 255, 255, 0.9);
-            padding: 15px 20px;
+            padding: 8px 15px;
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
+            transition: top 0.3s ease-in-out;
         }
         .top-bar .logo {
             font-size: 1.5rem;
             font-weight: bold;
             color: #2a1a5e;
         }
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #2a1a5e;
+        }
+        .top-bar nav {
+            display: flex;
+        }
         .top-bar nav a {
-            margin: 0 15px;
+            margin: 0 10px;
             text-decoration: none;
             color: #4a3f80;
             font-weight: 600;
@@ -45,72 +57,56 @@
         }
         .container {
             max-width: 900px;
-            margin: 120px auto 50px;
+            margin: 150px auto 50px;
             padding: 40px;
             text-align: center;
         }
-        .heading {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #2a1a5e;
-        }
-        .subheading {
-            font-size: 1.2rem;
-            margin: 20px 0;
-            color: #4a3f80;
-        }
-        .buttons {
-            margin-top: 30px;
-        }
-        .button {
-            padding: 14px 28px;
-            margin: 10px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .button.primary {
-            background: #6a50c8;
-            color: white;
-            box-shadow: 0px 5px 15px rgba(106, 80, 200, 0.3);
-        }
-        .button.secondary {
-            background: white;
-            border: 2px solid #6a50c8;
-            color: #6a50c8;
-        }
-        .button:hover {
-            opacity: 0.85;
-        }
-        .floating-image {
-            width: 90%;
-            max-width: 750px;
-            margin-top: 40px;
-            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.15);
-            border-radius: 12px;
-        }
-        .trusted-brands {
-            margin-top: 40px;
-            font-size: 1rem;
-            color: #4a3f80;
-        }
-        .brand-logos img {
-            height: 30px;
-            margin: 10px;
-            opacity: 0.7;
-            transition: 0.3s;
-        }
-        .brand-logos img:hover {
-            opacity: 1;
+        @media (max-width: 768px) {
+            .top-bar {
+                width: 95%;
+                padding: 10px;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .top-bar nav {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+                padding: 10px 0;
+                border-radius: 0 0 12px 12px;
+                opacity: 0;
+                transform: translateY(-100%);
+                transition: opacity 0.3s ease, transform 0.3s ease;
+            }
+            .top-bar nav.active {
+                display: flex;
+                opacity: 1;
+                transform: translateY(50px);
+            }
+            .top-bar nav a {
+                display: block;
+                padding: 10px 0;
+                text-align: center;
+            }
         }
     </style>
+    <script>
+        function toggleMenu() {
+            const menu = document.querySelector('.top-bar nav');
+            menu.classList.toggle('active');
+        }
+    </script>
 </head>
 <body>
     <div class="top-bar">
         <div class="logo">LOS</div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         <nav>
             <a href="#">User Stories</a>
             <a href="#">Product</a>
@@ -118,24 +114,10 @@
             <a href="#">Pricing</a>
             <a href="#">FAQ's</a>
         </nav>
-        <button class="button secondary">Get a Demo</button>
     </div>
     <div class="container">
         <h1 class="heading">Lead with the data to save your time and money</h1>
         <p class="subheading">Understand your market better with accurate, real-time insights. Analyze trends, track competitors – all in one place.</p>
-        <div class="buttons">
-            <button class="button primary">Get Started for Free</button>
-            <button class="button secondary">Get a Demo Now</button>
-        </div>
-        <img src="image.png" alt="Dashboard Preview" class="floating-image">
-        <p class="trusted-brands">Trusted by big brands in the world</p>
-        <div class="brand-logos">
-            <img src="asterisk-logo.png" alt="Asterisk">
-            <img src="oasis-logo.png" alt="Oasis">
-            <img src="ebooks-logo.png" alt="Ebooks">
-            <img src="opal-logo.png" alt="Opal">
-            <img src="dune-logo.png" alt="Dune">
-        </div>
     </div>
 </body>
 </html>
