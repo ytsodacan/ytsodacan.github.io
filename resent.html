@@ -10,23 +10,19 @@
       margin: 0;
       background: #111;
       overflow: hidden;
-    }
-    .login-box {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #111;
     }
-    .login-box-inner {
+    .login-box {
       background: #222;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(255,255,255,0.2);
       text-align: center;
     }
-    input,
-    button {
+    input, button {
       display: block;
       width: 100%;
       margin: 10px 0;
@@ -39,62 +35,56 @@
       width: 100%;
       height: 100%;
       border: none;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div id="container"></div>
   <script>
-    // Check for the URL parameter to see if we're in the game view.
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('iframe') === 'true') {
-      // In the game view: Display your game content.
-      document.body.innerHTML = '<h1 style="color:white; text-align:center; margin-top:50px;">Game goes here. (Starting at 0)</h1>';
-    } else {
-      // In the login view: Create the login UI.
-      document.getElementById("container").innerHTML = `
-        <div class="login-box" id="loginBox">
-          <div class="login-box-inner">
-            <h2 style="color: white;">Login</h2>
-            <input type="email" id="email" placeholder="Email" />
-            <input type="password" id="password" placeholder="Password" />
-            <p id="error-message" style="color: red; display: none;">Wrong password</p>
-            <button type="button" onclick="login()">Login</button>
-          </div>
-        </div>
-      `;
-      
-      // Initialize Supabase for login
-      const supabaseUrl = "https://puzrnkzbdenhcaxvmojd.supabase.co";
-      const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1enJua3piZGVuaGNheHZtb2pkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2Mjg2MjUsImV4cCI6MjA1NjIwNDYyNX0.azOKL2Ds58UO98cCUkQNeNVPUT3necSgCDOOaMWCo94";
-      const client = supabase.createClient(supabaseUrl, supabaseKey);
-    
-      // Expose the login function globally.
-      window.login = async function() {
-        console.log("Login button clicked");
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        const errorMessage = document.getElementById("error-message");
-    
-        const { data, error } = await client.auth.signInWithPassword({ email, password });
-        console.log("Data:", data);
-        console.log("Error:", error);
-    
-        if (error) {
-          errorMessage.innerText = error.message;
-          errorMessage.style.display = "block";
-        } else {
-          errorMessage.style.display = "none";
-          console.log("Login successful, creating iframe...");
-          // Hide the login UI
-          document.getElementById("container").innerHTML = "";
-    
-          // Create an iframe with ?iframe=true so it loads the game view.
-          const iframe = document.createElement("iframe");
-          iframe.src = window.location.origin + window.location.pathname + "?iframe=true";
-          document.body.appendChild(iframe);
-          console.log("Iframe appended");
-        }
+    // Supabase setup
+    const supabaseUrl = "https://puzrnkzbdenhcaxvmojd.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1enJua3piZGVuaGNheHZtb2pkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA2Mjg2MjUsImV4cCI6MjA1NjIwNDYyNX0.azOKL2Ds58UO98cCUkQNeNVPUT3necSgCDOOaMWCo94";
+    const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Display login UI
+    document.getElementById("container").innerHTML = `
+      <div class="login-box" id="loginBox">
+        <h2 style="color: white;">Login</h2>
+        <input type="email" id="email" placeholder="Email" />
+        <input type="password" id="password" placeholder="Password" />
+        <p id="error-message" style="color: red; display: none;">Wrong password</p>
+        <button type="button" onclick="login()">Login</button>
+      </div>
+    `;
+
+    // Expose login function globally
+    window.login = async function() {
+      console.log("Login button clicked");
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const errorMessage = document.getElementById("error-message");
+
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      console.log("Data:", data);
+      console.log("Error:", error);
+
+      if (error) {
+        errorMessage.innerText = error.message;
+        errorMessage.style.display = "block";
+      } else {
+        errorMessage.style.display = "none";
+        console.log("Login successful, creating iframe...");
+
+        // Hide login UI
+        document.getElementById("container").innerHTML = "";
+
+        // Create and append iframe
+        const iframe = document.createElement("iframe");
+        iframe.src = "https://ytsodacan.github.io/resent"; // Your game site
+        iframe.style.display = "block";
+        document.body.appendChild(iframe);
+        console.log("Iframe appended");
       }
     }
   </script>
