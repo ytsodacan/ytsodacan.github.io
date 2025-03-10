@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag & Drop Editor</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: #555;
+        }
+        #dock {
+            width: 200px;
+            background: #777;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
+        .draggable {
+            padding: 10px;
+            margin: 5px;
+            background: white;
+            cursor: grab;
+            border: 1px solid black;
+        }
+        #canvas {
+            width: 80vw;
+            height: 80vh;
+            background: white;
+            position: relative;
+            border: 2px solid black;
+        }
+        .canvas-item {
+            position: absolute;
+            cursor: grab;
+        }
+        #editor {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border: 1px solid black;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="dock">
+        <div class="draggable" draggable="true" data-type="text">Text</div>
+        <div class="draggable" draggable="true" data-type="image">Image</div>
+        <button onclick="saveCanvas()">Save</button>
+    </div>
+    <div id="canvas"></div>
+    <div id="editor">
+        <label>Text: <input type="text" id="edit-text"></label><br>
+        <label>Color: <input type="color" id="edit-color"></label><br>
+        <label>Font Size: <input type="number" id="edit-size"></label><br>
+        <label>Border: <input type="text" id="edit-border"></label><br>
+        <label>Google Font URL: <input type="text" id="edit-font-url"></label><br>
+        <label>Image URL: <input type="text" id="edit-image-url" placeholder="Enter image URL"></label><br>
+        <button onclick="applyStyles()">Apply</button>
+    </div>
+    <script>
+        let draggedElement = null;
+        let selectedElement = null;
+        let fontLoaded = false;
+
+        document.querySelectorAll('.draggable').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('type', e.target.getAttribute('data-type'));
+                draggedElement = e.target;
+            });
+        });
+
+        document.getElementById('canvas').addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        document.getElementById('canvas').addEventListener('drop', (e) => {
+            e.preventDefault();
+            const type = e.dataTransfer.getData('type');
+            let newItem;
+
+            if (!draggedElement.classList.contains('canvas-item')) {
+                newItem = document.createElement(type === 'text' ? 'div' : 'img');
+                newItem.classList.add('canvas-item');
+                if (type === 'text') {
+                    newItem.textContent = 'New Text';
+                    newItem.style.background = 'white';
+                    newItem.style.padding = '5px';
+                    newItem.style.border = '1px solid black';
+                } else {
+                    newItem.src = 'https://via.placeholder.com/100'; // default image
+                    newItem.style.width = '100px';
+                }
+                newItem.draggable = true;
+                newItem.addEventListener('dragstart', dragStart);
+                newItem.addEventListener('dragend', dragEnd);
+                newItem.addEventListener('click', openEditor);
+                document.getElementById('canvas').appendChild(newItem);
+            } else {
+                newItem = draggedElement;
+            }
+
+            newItem.style.left = `${e.clientX - document.getElementById('canvas').getBoundingClientRect().left}px`;
+            newItem.style.top = `${e.clientY - document.getElementById('canvas').getBoundingClientRect().top}px`;
+        });
+
+        function dragStart(e) {
+            draggedElement = this;
+            e.dataTransfer.setData('text/plain', '');
+        }
+
+        function dragEnd(e) {
+            const canvas = document.getElementById('canvas');
+            const canvasRect = canvas.getBoundingClientRect();
+            const offsetX = e.clientX - canvasRect.left;
+            const offsetY = e.clientY - canvasRect.top;
+
+            this.style.left = `${Math.max(0, Math.min(offsetX, canvasRect.width - this.offsetWidth))}px`;
+            this.style.top = `${Math.max(0, Math.min(offsetY, canvasRect.height - this.offsetHeight))}px`;
+        }
+
+        function openEditor(e) {
+            selectedElement = e.target;
+            document.getElementById('editor').style.display = 'block';
+
+            // If the element is a text element, allow text editing
+            if (selectedElement.tagName === 'DIV') {
+                document.getElementById('edit-text').value = selectedElement.textContent;
+            } else if (selectedElement.tagName === 'IMG') {
+                document.getElementById('edit-image-url').value = selectedElement.src;
+            }
+
+            document.getElementById('edit-color').value = selectedElement.style.color || '#000000';
+            document.getElementById('edit-size').value = parseInt(selectedElement.style.fontSize) || 16;
+            document.getElementById('edit-border').value = selectedElement.style.border || '1px solid black';
+            document.getElementById('edit-font-url').value = selectedElement.style.fontFamily || '';
+        }
+
+        function applyStyles() {
+            if (selectedElement) {
+                if (selectedElement.tagName === 'DIV') {
+                    // Update text content if it's a text element
+                    selectedElement.textContent = document.getElementById('edit-text').value;
+                }
+
+                selectedElement.style.color = document.getElementById('edit-color').value;
+                selectedElement.style.fontSize = document.getElementById('edit-size').value + 'px';
+                selectedElement.style.border = document.getElementById('edit-border').value;
+
+                // Apply font from Google Font URL
+                const fontURL = document.getElementById('edit-font-url').value;
+                if (fontURL && !fontLoaded) {
+                    const linkElement = document.createElement('link');
+                    linkElement.href = fontURL;
+                    linkElement.rel = 'stylesheet';
+                    document.head.appendChild(linkElement);
+
+                    // Set a flag to indicate that the font has been loaded
+                    fontLoaded = true;
+
+                    linkElement.onload = () => {
+                        selectedElement.style.fontFamily = linkElement.href.split('/').pop().split('.')[0];
+                    };
+                } else if (fontURL) {
+                    selectedElement.style.fontFamily = fontURL.split('/').pop().split('.')[0];
+                }
+
+                // If it's an image, update the source
+                if (selectedElement.tagName === 'IMG') {
+                    const imageUrl = document.getElementById('edit-image-url').value;
+                    if (imageUrl) {
+                        selectedElement.src = imageUrl;
+                    }
+                }
+            }
+        }
+
+        function saveCanvas() {
+            const elements = document.querySelectorAll('.canvas-item');
+            let content = '<!DOCTYPE html><html><head><style>.canvas-item{position:absolute;}</style></head><body>';
+            elements.forEach(el => {
+                const style = `style="left:${el.style.left};top:${el.style.top};color:${el.style.color};font-size:${el.style.fontSize};border:${el.style.border};width:${el.style.width};height:${el.style.height};font-family:${el.style.fontFamily};"`;
+                if (el.tagName === 'DIV') {
+                    content += `<div class="canvas-item" ${style}>${el.textContent}</div>`;
+                } else {
+                    content += `<img class="canvas-item" ${style} src="${el.src}">`;
+                }
+            });
+            content += '</body></html>';
+            const blob = new Blob([content], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'canvas.html';
+            a.click();
+        }
+    </script>
+</body>
+</html>
