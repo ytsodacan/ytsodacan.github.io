@@ -23,7 +23,6 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
       text-align: center;
-      
     }
     input {
       font-family: 'ADLaM Display';font-size: 22px;
@@ -105,75 +104,10 @@ glow:after
 
  
 }
-.quote-container {
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 500px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-        }
-
-        .image {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 20px;
-        }
-
-        .quote-text {
-            flex: 1;
-            font-size: 18px;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            position: absolute;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .quote-text.active {
-            opacity: 1;
-            position: relative;
-        }
-
-        .name {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #333;
-        }
   </style>
 </head>
 <body>
-  <div class="quote-container">
-    <img class="image" id="quote-image" src="" alt="Person">
-
-    <div class="quote-text active">
-        <p id="quote">"I, am Steve"</p>
-        <p class="name" id="name">- Jack Black</p>
-    </div>
-
-    <div class="quote-text">
-        <p>"I am placing blocks and shi cause im in fuc#ing minecraft."</p>
-        <p class="name">- Steve </p>
-    </div>
-
-    <div class="quote-text">
-        <p>"No! Doctor Tryarus, we can't burn the gays!"</p>
-        <p class="name">- DanTDM</p>
-    </div>
-</div>
-
   <div class="login-box" id="loginBox">
-    <div class="loginstuff">
     <h2 style="color: white;">Login</h2>
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
@@ -182,9 +116,9 @@ glow:after
 
 
     <glow>
-    <button type="button"  onclick="login()">Login</button>
+    <button type="button" style="" onclick="login()">Login</button>
     </glow>
-    </div>
+    
 
 
 
@@ -217,48 +151,6 @@ glow:after
 
       }
     }
-
-
-    const quotes = [
-            {
-                text: "I, am Steve",
-                name: "Jack Black",
-                image: "https://upload.wikimedia.org/wikipedia/commons/9/94/FDR_1944_Color_Portrait.jpg"
-            },
-            {
-                text: "I am placing blocks and shi cause im in fuc#ing minecraft.",
-                name: "Steve",
-                image: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Sir_Winston_Churchill_-_19086236948.jpg"
-            },
-            {
-                text: "No! Doctor Tryarus, we can't burn the gays!",
-                name: "DanTDM",
-                image: "https://upload.wikimedia.org/wikipedia/commons/7/74/Teddyroosevelt.jpg"
-            }
-        ];
-
-        let index = 0;
-        function changeQuote() {
-            const quoteElements = document.querySelectorAll('.quote-text');
-            const quoteImage = document.getElementById('quote-image');
-            const totalQuotes = quotes.length;
-
-            // Remove 'active' from all quotes
-            quoteElements.forEach(q => q.classList.remove('active'));
-
-            // Add 'active' to the next quote
-            index = (index + 1) % totalQuotes;
-            quoteElements[index].classList.add('active');
-
-            // Change image
-            quoteImage.src = quotes[index].image;
-        }
-
-        // Initial image setup
-        document.getElementById('quote-image').src = quotes[0].image;
-
-        // Change quote every 7 seconds
-        setInterval(changeQuote, 7000);
   </script>
 </body>
 </html>
