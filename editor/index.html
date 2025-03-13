@@ -100,7 +100,7 @@
                     newItem.style.padding = '5px';
                     newItem.style.border = '1px solid black';
                 } else {
-                    newItem.src = 'https://ytsodacan.github.io/nuhuh.gif'; // default image
+                    newItem.src = 'https://via.placeholder.com/100'; // default image
                     newItem.style.width = '100px';
                 }
                 newItem.draggable = true;
@@ -181,7 +181,7 @@
                 if (selectedElement.tagName === 'IMG') {
                     const imageUrl = document.getElementById('edit-image-url').value;
                     if (imageUrl) {
-                        selectedElement.src = "https://" + imageUrl;
+                        selectedElement.src = imageUrl;
                     }
                 }
             }
