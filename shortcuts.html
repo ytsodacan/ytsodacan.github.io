@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Shortcut Editor</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .editor { display: flex; gap: 20px; }
+        .actions-panel { width: 250px; border-right: 1px solid #ccc; padding: 10px; }
+        .workflow-area { flex-grow: 1; padding: 10px; }
+        .action-item { padding: 10px; margin: 5px; background: #f0f0f0; cursor: move; }
+        .action-form { margin-top: 20px; padding: 15px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <div class="editor">
+        <div class="actions-panel">
+            <h3>Available Actions</h3>
+            <div class="action-item" data-type="url">Open URL</div>
+            <div class="action-item" data-type="alert">Show Alert</div>
+            <div class="action-item" data-type="clipboard">Copy to Clipboard</div>
+        </div>
+        
+        <div class="workflow-area">
+            <h3>Workflow</h3>
+            <div id="workflow-actions"></div>
+            <button onclick="exportShortcut()">Export Shortcut</button>
+            <div id="action-config" class="action-form"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentShortcut = {
+            WFWorkflowActions: [],
+            WFWorkflowClientVersion: "1180",
+            WFWorkflowIcon: { WFWorkflowIconStartColor: 4274264319 },
+            WFWorkflowImportQuestions: [],
+            WFWorkflowTypes: ["NCWidget"]
+        };
+
+        // Action templates
+        const actionTemplates = {
+            url: {
+                WFWorkflowActionIdentifier: "is.workflow.actions.openurl",
+                WFWorkflowActionParameters: { WFURL: "" }
+            },
+            alert: {
+                WFWorkflowActionIdentifier: "is.workflow.actions.alert",
+                WFWorkflowActionParameters: {
+                    WFAlertMessage: "",
+                    WFAlertType: "Alert"
+                }
+            },
+            clipboard: {
+                WFWorkflowActionIdentifier: "is.workflow.actions.setclipboard",
+                WFWorkflowActionParameters: {
+                    WFText: ""
+                }
+            }
+        };
+
+        function addAction(type) {
+            const newAction = JSON.parse(JSON.stringify(actionTemplates[type]));
+            currentShortcut.WFWorkflowActions.push(newAction);
+            updateWorkflowDisplay();
+        }
+
+        function updateWorkflowDisplay() {
+            const container = document.getElementById('workflow-actions');
+            container.innerHTML = '';
+            
+            currentShortcut.WFWorkflowActions.forEach((action, index) => {
+                const div = document.createElement('div');
+                div.className = 'action-item';
+                div.textContent = action.WFWorkflowActionIdentifier.split('.').pop();
+                div.onclick = () => configureAction(index);
+                container.appendChild(div);
+            });
+        }
+
+        function configureAction(index) {
+            const action = currentShortcut.WFWorkflowActions[index];
+            const configDiv = document.getElementById('action-config');
+            configDiv.innerHTML = '';
+            
+            Object.keys(action.WFWorkflowActionParameters).forEach(param => {
+                const label = document.createElement('label');
+                label.textContent = param;
+                const input = document.createElement('input');
+                input.value = action.WFWorkflowActionParameters[param];
+                input.onchange = (e) => {
+                    action.WFWorkflowActionParameters[param] = e.target.value;
+                };
+                configDiv.appendChild(label);
+                configDiv.appendChild(input);
+                configDiv.appendChild(document.createElement('br'));
+            });
+        }
+
+        function exportShortcut() {
+            const plistContent = generatePlist(currentShortcut);
+            const blob = new Blob([plistContent], { type: 'application/x-plist' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'shortcut.shortcut';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function generatePlist(obj) {
+            // Basic PLIST XML generator
+            let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>`;
+            
+            for(const [key, value] of Object.entries(obj)) {
+                xml += `<key>${key}</key>`;
+                xml += serializeValue(value);
+            }
+            
+            xml += `</dict></plist>`;
+            return xml;
+        }
+
+        function serializeValue(value) {
+            if(Array.isArray(value)) {
+                return `<array>${value.map(v => serializeValue(v)).join('')}</array>`;
+            }
+            if(typeof value === 'object') {
+                return `<dict>${Object.entries(value).map(([k, v]) => `<key>${k}</key>${serializeValue(v)}`).join('')}</dict>`;
+            }
+            if(typeof value === 'string') {
+                return `<string>${value}</string>`;
+            }
+            return `<integer>${value}</integer>`;
+        }
+
+        // Drag and drop functionality
+        document.querySelectorAll('.action-item[data-type]').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('action-type', item.dataset.type);
+            });
+        });
+
+        document.getElementById('workflow-actions').addEventListener('dragover', e => {
+            e.preventDefault();
+        });
+
+        document.getElementById('workflow-actions').addEventListener('drop', e => {
+            e.preventDefault();
+            const type = e.dataTransfer.getData('action-type');
+            addAction(type);
+        });
+    </script>
+</body>
+</html>
