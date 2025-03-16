@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mobile Shortcut Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+        }
+        .editor {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .actions-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .action-btn {
+            padding: 15px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .workflow-area {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .workflow-step {
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-form {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        #export-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #34C759;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 768px) {
+            .editor {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor">
+        <div class="actions-panel">
+            <button class="action-btn" data-type="url">🌐 Open URL</button>
+            <button class="action-btn" data-type="alert">⚠️ Alert</button>
+            <button class="action-btn" data-type="clipboard">📋 Copy Text</button>
+        </div>
+        
+        <div class="workflow-area">
+            <h3>Your Workflow</h3>
+            <div id="workflow-actions"></div>
+            <div id="action-config" class="action-form"></div>
+        </div>
+    </div>
+
+    <button id="export-btn" onclick="exportShortcut()">Export Shortcut</button>
+
+    <script>
+        let currentShortcut = {
+            WFWorkflowActions: [],
+            WFWorkflowClientVersion: "1180",
+            WFWorkflowIcon: { WFWorkflowIconStartColor: 4274264319 },
+            WFWorkflowImportQuestions: [],
+            WFWorkflowTypes: ["NCWidget"]
+        };
+
+        const actionTemplates = {
+            url: {
+                WFWorkflowActionIdentifier: "is.workflow.actions.openurl",
+                WFWorkflowActionParameters: { WFURL: "" }
+            },
+            alert: {
+                WFWorkflowActionIdentifier: "is.workflow.actions.alert",
+                WFWorkflowActionParameters: {
+                    WFAlertMessage: "",
+                    WFAlertType: "Alert"
+                }
+            },
+            clipboard: {
+                WFWorkflowActionIdentifier: "is.workflow.actions.setclipboard",
+                WFWorkflowActionParameters: { WFText: "" }
+            }
+        };
+
+        // Add click handlers for action buttons
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', () => addAction(btn.dataset.type));
+        });
+
+        function addAction(type) {
+            const newAction = JSON.parse(JSON.stringify(actionTemplates[type]));
+            currentShortcut.WFWorkflowActions.push(newAction);
+            updateWorkflowDisplay();
+            configureAction(currentShortcut.WFWorkflowActions.length - 1);
+        }
+
+        function updateWorkflowDisplay() {
+            const container = document.getElementById('workflow-actions');
+            container.innerHTML = currentShortcut.WFWorkflowActions
+                .map((action, index) => `
+                    <div class="workflow-step" onclick="configureAction(${index})">
+                        ${action.WFWorkflowActionIdentifier.split('.').pop()}
+                    </div>
+                `).join('');
+        }
+
+        function configureAction(index) {
+            const action = currentShortcut.WFWorkflowActions[index];
+            const configDiv = document.getElementById('action-config');
+            configDiv.innerHTML = Object.entries(action.WFWorkflowActionParameters)
+                .map(([key, value]) => `
+                    <label>${key}</label>
+                    <input class="form-input" 
+                           value="${value}" 
+                           oninput="updateActionParam(${index}, '${key}', this.value)"
+                           placeholder="Enter ${key}">
+                `).join('');
+        }
+
+        function updateActionParam(index, param, value) {
+            currentShortcut.WFWorkflowActions[index].WFWorkflowActionParameters[param] = value;
+        }
+
+        function exportShortcut() {
+            const plistContent = generatePlist(currentShortcut);
+            const blob = new Blob([plistContent], { type: 'application/x-plist' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'shortcut.shortcut';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function generatePlist(obj) {
+            let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>`;
+            
+            for(const [key, value] of Object.entries(obj)) {
+                xml += `<key>${key}</key>${serializeValue(value)}`;
+            }
+            
+            return xml + `</dict></plist>`;
+        }
+
+        function serializeValue(value) {
+            if(Array.isArray(value)) {
+                return `<array>${value.map(v => serializeValue(v)).join('')}</array>`;
+            }
+            if(typeof value === 'object') {
+                return `<dict>${Object.entries(value).map(([k, v]) => `<key>${k}</key>${serializeValue(v)}`).join('')}</dict>`;
+            }
+            return `<string>${value}</string>`;
+        }
+    </script>
+</body>
+</html>p
