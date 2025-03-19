@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "name": "example1.txt",
+      "path": "documents/example1.txt",
+      "download_link": "https://yourwebsite.com/documents/example1.txt"
+    },
+    {
+      "name": "example2.jpg",
+      "path": "images/example2.jpg",
+      "download_link": "https://yourwebsite.com/images/example2.jpg"
+    },
+    {
+      "name": "example3.pdf",
+      "path": "pdfs/example3.pdf",
+      "download_link": "https://yourwebsite.com/pdfs/example3.pdf"
+    }
+  ]
+}
