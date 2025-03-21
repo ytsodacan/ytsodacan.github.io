@@ -1,20 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Seed Map</title>
-    <link rel="stylesheet" href="style.css">
-          <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="cubios/cubios.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minecraft Seed Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 500px; width: 80%; margin: auto; }
+    body { text-align: center; font-family: Arial, sans-serif; }
+  </style>
 </head>
 <body>
-    <h1>Minecraft Seed Map</h1>
-    <input type="number" id="seedInput" placeholder="Enter seed">
-    <button onclick="generateMap()">Generate</button>
-    <div id="map"></div>
-
-    <script src="script.js"></script>
+  <h1>Minecraft Seed Map</h1>
+  <input type="number" id="seedInput" placeholder="Enter seed">
+  <button id="seedInputButton">Generate</button>
+  <div id="map"></div>
+  
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Include the JavaScript code from above here.
+    async function getVillageData(seed) {
+      const version = "java_1_20";
+      const url = `https://chunkbase.com/api/seed-maps/village?seed=${seed}&version=${version}`;
+      
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Village Locations:", data);
+        return data;
+      } catch (error) {
+        console.error("Error fetching village data:", error);
+      }
+    }
+    
+    const map = L.map('map').setView([0, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    
+    async function displayVillages(seed) {
+      const villages = await getVillageData(seed);
+      
+      if (!villages || !Array.isArray(villages)) {
+        console.error("No village data returned or data format unexpected.");
+        return;
+      }
+      
+      villages.forEach(village => {
+        L.marker([village.z, village.x])
+          .addTo(map)
+          .bindPopup(`Village at (${village.x}, ${village.z})`);
+      });
+    }
+    
+    document.getElementById('seedInputButton').addEventListener('click', () => {
+      const seed = document.getElementById('seedInput').value;
+      if (seed) {
+        displayVillages(seed);
+      } else {
+        alert("Please enter a valid seed.");
+      }
+    });
+  </script>
 </body>
 </html>
