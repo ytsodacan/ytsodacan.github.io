@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Config Generator</title>
+    <style>
+        /* Fancy Background */
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Main Card Container */
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
+            width: 350px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Smooth Fade-in Effect */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Inputs */
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            background: #f3f3f3;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            background: #e8e8e8;
+        }
+
+        /* Upload Icon Button */
+        input[type="file"] {
+            border: 1px solid #ddd;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #ff512f, #dd2476);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #dd2476, #ff512f);
+            transform: translateY(-2px);
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 style="color: #333; margin-bottom: 10px;">📄 Config Generator</h1>
+        
+        <label for="appName">App Name:</label>
+        <input type="text" id="appName" placeholder="Enter app name">
+
+        <label for="websiteUrl">Website URL:</label>
+        <input type="text" id="websiteUrl" placeholder="Enter website URL">
+
+        <label for="icon">Upload Icon (optional):</label>
+        <input type="file" id="icon" accept="image/*">
+
+        <button onclick="generateFile()">🚀 Download Config (.mobileconfig)</button>
+    </div>
+
+    <script>
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function generateFile() {
+            const appName = document.getElementById('appName').value;
+            const websiteUrl = document.getElementById('websiteUrl').value;
+            const iconInput = document.getElementById('icon').files[0];
+
+            if (!appName || !websiteUrl) {
+                alert('Please enter all fields');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const iconBase64 = event.target.result ? event.target.result.split(',')[1] : '';
+
+                const mobileConfig = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>FullScreen</key>
+            <true/>
+            <key>Icon</key>
+            <data>${iconBase64}</data>
+            <key>IsRemovable</key>
+            <true/>
+            <key>Label</key>
+            <string>${appName}</string>
+            <key>PayloadDescription</key>
+            <string>App Shortcut</string>
+            <key>PayloadDisplayName</key>
+            <string>${appName}</string>
+            <key>PayloadIdentifier</key>
+            <string>com.example.webclip.${generateUUID()}</string>
+            <key>PayloadType</key>
+            <string>com.apple.webClip.managed</string>
+            <key>PayloadUUID</key>
+            <string>${generateUUID()}</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>Precomposed</key>
+            <true/>
+            <key>URL</key>
+            <string>${websiteUrl}</string>
+        </dict>
+    </array>
+    <key>PayloadDescription</key>
+    <string>Web Clip Configuration</string>
+    <key>PayloadDisplayName</key>
+    <string>${appName}</string>
+    <key>PayloadIdentifier</key>
+    <string>com.example.config.${generateUUID()}</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>${generateUUID()}</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>`;
+
+                const blob = new Blob([mobileConfig], { type: 'application/x-apple-aspen-config' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${appName}.mobileconfig`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            if (iconInput) {
+                reader.readAsDataURL(iconInput);
+            } else {
+                reader.onload();
+            }
+        }
+    </script>
+
+</body>
+</html>
