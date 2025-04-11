@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codedgar/Puppertino@latest/dist/css/buttons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/codedgar/Puppertino@latest/dist/css/newfull.css">
+  <link rel="stylesheet" href="/css/actions.css">
   <title>Memorify</title>
   <style>
     /* Base Reset and Fonts */
@@ -97,10 +100,7 @@
       margin-top: 20px;
       animation: fadeIn 1s ease infinite alternate;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    
     /* Memory Container & Cards */
     .memory-container {
       display: flex;
@@ -283,64 +283,73 @@
 </head>
 <body>
   <div class="topbar" id="topbar">
-    <button class="btn toggle-btn" onclick="toggleDarkMode()">Toggle Dark/Light</button>
+    <button class="btn toggle-btn p-btn" onclick="toggleDarkMode()">Toggle Dark/Light</button>
     <h3>MEMORIFY</h3>
     <div>
-      <button class="btn upload-btn" onclick="document.getElementById('fileInput').click()">Upload Photos</button>
-      <button class="settings-btn" onclick="openSettings()">&#9881;</button>
+        <button class="p-btn btn toggle-btn" data-p-open-actions="#settings_actions">Settings</button>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(event)">
     </div>
-    <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(event)">
-  </div>
+</div>
 
-  <div class="home" id="home">
+<div class="home" id="home">
     <div class="icon">🔍</div>
-    <button class="btn upload-btn" onclick="document.getElementById('fileInput').click()">Upload Photos</button>
+    <button class="btn upload-btn p-btn p-btn-md" onclick="document.getElementById('fileInput').click()">Upload Photos</button>
     <div id="loading"></div>
-  </div>
+</div>
 
-  <div class="memory-container" id="memoryContainer" style="display: none;">
-    </div>
+<div class="memory-container" id="memoryContainer" style="display: none;">
+</div>
 
-  <div id="settingsModal" class="modal">
-    <div class="modal-content">
-      <h2>Settings</h2>
-      <button class="btn delete-btn" onclick="openDeleteConfirm()">Delete All Memories</button>
-      <br>
-      <button class="btn close-btn" onclick="closeSettings()">Close</button>
-    </div>
-  </div>
-
-  <div id="deleteConfirmModal" class="modal">
-    <div class="modal-content">
-      <h2>Confirm Deletion</h2>
-      <p>Are you sure you want to delete all memories? This action cannot be undone.</p>
-      <button class="btn delete-btn" onclick="deleteAllMemories()">Confirm Delete</button>
-      <br>
-      <button class="btn close-btn" onclick="closeDeleteConfirm()">Cancel</button>
-    </div>
-  </div>
-
-  <div class="slideshow-container" id="slideshowContainer">
+<div class="slideshow-container" id="slideshowContainer">
     <div class="slideshow-content">
-      <h2 class="slide-title" id="slideshowTitle"></h2>
-      <button class="close-button" onclick="closeSlideshow()">&times;</button>
-      <div class="slide" id="slide1">
-        <img id="slideImage1" src="">
-      </div>
-      <div class="slide" id="slide2">
-        <img id="slideImage2" src="">
-      </div>
-      <div class="slide" id="slide3">
-        <img id="slideImage3" src="">
-      </div>
-      <div class="slide-nav">
-        <button class="nav-button" id="prevButton" onclick="prevSlide()" disabled>❮</button>
-        <button class="nav-button" id="nextButton" onclick="nextSlide()">❯</button>
-      </div>
+        <h2 class="slide-title" id="slideshowTitle"></h2>
+        <button class="close-button" onclick="closeSlideshow()">&times;</button>
+        <div class="slide" id="slide1">
+            <img id="slideImage1" src="">
+        </div>
+        <div class="slide" id="slide2">
+            <img id="slideImage2" src="">
+        </div>
+        <div class="slide" id="slide3">
+            <img id="slideImage3" src="">
+        </div>
+        <div class="slide-nav">
+            <button class="p-btn p-btn-md" id="prevButton" onclick="prevSlide()" disabled>❮</button>
+            <button class="p-btn p-btn-md" id="nextButton" onclick="nextSlide()">❯</button>
+        </div>
     </div>
-  </div>
+</div>
+
+<div class="p-action-background">
+    <div class="p-action-big-container" id="settings_actions" data-p-close-on-outside="true">
+        <div class="p-action-container">
+            <div class="p-action-title">
+                <h3 class="p-action-title--intern">Settings</h3>
+                <p class="p-action-text">Select an option below...</p>
+            </div>
+            <button class="p-action--intern p-action-destructive" onclick="deleteAllMemories()">Delete All Memories</button>
+        </div>
+        <div class="p-action-container">
+            <button class="p-action--intern p-action-cancel" data-p-cancel-action="true">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteConfirmModal" class="modal">
+    <div class="modal-content p-card">
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete all memories? This action cannot be undone.</p>
+        <button class="btn delete-btn p-btn p-btn-md" onclick="deleteAllMemories()">Confirm Delete</button>
+        <br>
+        <button class="btn close-btn p-btn p-btn-md" onclick="closeDeleteConfirm()">Cancel</button>
+    </div>
+</div>
+
+
 
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <script src="/js/actions.js"></script>
+  
   <script>
     // Global variables
     let groupedPhotos = [];
@@ -349,351 +358,481 @@
     let currentSlideIndex = 0;
     let slideshowTimeout;
     let slideshowInterval; // Added for auto-play interval
-    let transitionStyle = 'fade'; // Default transition style
+    let transitionStyle = 'zoom'; // Default transition style
+    let audioPlayer; // Declare audioPlayer outside functions
+    let locations = []; // Store unique locations
 
     // Get DOM elements
     const memoryContainer = document.getElementById('memoryContainer');
     const slideshowContainer = document.getElementById('slideshowContainer');
     const slideshowTitle = document.getElementById('slideshowTitle');
     const slideImages = [
-      document.getElementById('slideImage1'),
-      document.getElementById('slideImage2'),
-      document.getElementById('slideImage3')
+        document.getElementById('slideImage1'),
+        document.getElementById('slideImage2'),
+        document.getElementById('slideImage3')
     ];
     const slides = [
-      document.getElementById('slide1'),
-      document.getElementById('slide2'),
-      document.getElementById('slide3')
+        document.getElementById('slide1'),
+        document.getElementById('slide2'),
+        document.getElementById('slide3')
     ];
     const prevButton = document.getElementById('prevButton');
     const nextButton = document.getElementById('nextButton');
+    const settingsButtonElement = document.querySelector('[data-p-open-actions="#settings_actions"]');  // Select the settings button
+    const settingsActionsElement = document.getElementById('settings_actions'); // Select the actions container
+    const actionCancelButtons = document.querySelectorAll('[data-p-cancel-action="true"]');
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
 
-    window.addEventListener('load', function() {
-      loadMemoriesFromDB();
+
+    window.addEventListener('load', function () {
+        loadMemoriesFromDB();
     });
 
     function toggleDarkMode() {
-      document.body.classList.toggle('dark');
-      document.getElementById('topbar').classList.toggle('dark');
+        document.body.classList.toggle('dark');
+        document.getElementById('topbar').classList.toggle('dark');
     }
 
+
+
     function openSettings() {
-      document.getElementById('settingsModal').style.display = 'flex';
+        //  document.getElementById('settingsModal').style.display = 'flex';
     }
 
     function closeSettings() {
-      document.getElementById('settingsModal').style.display = 'none';
+        // document.getElementById('settingsModal').style.display = 'none';
     }
 
     // Open delete confirmation modal
     function openDeleteConfirm() {
-      document.getElementById('deleteConfirmModal').style.display = 'flex';
+        deleteConfirmModal.style.display = 'flex';
     }
     function closeDeleteConfirm() {
-      document.getElementById('deleteConfirmModal').style.display = 'none';
+        deleteConfirmModal.style.display = 'none';
     }
 
     function deleteAllMemories() {
-      // Clear in-memory memories and view
-      groupedPhotos = [];
-      memoryContainer.innerHTML = "";
-      memoryContainer.style.display = 'none';
-      document.getElementById('home').style.display = 'flex';
-      // Delete from IndexedDB cache
-      const request = indexedDB.open("memorifyDB", 1);
-      request.onsuccess = function(e) {
-        let db = e.target.result;
-        let tx = db.transaction("memories", "readwrite");
-        let store = tx.objectStore("memories");
-        store.delete("groupedPhotos");
-        tx.oncomplete = function() {
-          console.log("All memories deleted from cache.");
-          closeDeleteConfirm();
-          closeSettings();
+        // Clear in-memory memories and view
+        groupedPhotos = [];
+        memoryContainer.innerHTML = "";
+        memoryContainer.style.display = 'none';
+        document.getElementById('home').style.display = 'flex';
+        // Delete from IndexedDB cache
+        const request = indexedDB.open("memorifyDB", 1);
+        request.onsuccess = function (e) {
+            let db = e.target.result;
+            let tx = db.transaction("memories", "readwrite");
+            let store = db.objectStore("memories");
+            store.delete("groupedPhotos");
+            tx.oncomplete = function () {
+                console.log("All memories deleted from cache.");
+                closeDeleteConfirm();
+                //  closeSettings();
+                settingsActionsElement.style.display = 'none';
+            };
         };
-      };
-      request.onerror = function(e) {
-        console.error("Error opening IndexedDB", e);
-      };
+        request.onerror = function (e) {
+            console.error("Error opening IndexedDB", e);
+        };
     }
 
     // Convert GPS data array to decimal degrees
     function convertGPSToDecimal(gpsData, gpsRef) {
-      if (!gpsData || gpsData.length < 3) return 0;
-      const [degrees, minutes, seconds] = gpsData;
-      let decimal = degrees + minutes / 60 + seconds / 3600;
-      if (gpsRef === 'S' || gpsRef === 'W') {
-         decimal = -decimal;
-      }
-      return decimal;
+        if (!gpsData || gpsData.length < 3) return 0;
+        const [degrees, minutes, seconds] = gpsData;
+        let decimal = degrees + minutes / 60 + seconds / 3600;
+        if (gpsRef === 'S' || gpsRef === 'W') {
+            decimal = -decimal;
+        }
+        return decimal;
     }
 
     function handleFiles(event) {
-      const files = event.target.files;
-      if (!files.length) return;
-      photosProcessed = false;
-      const loading = document.getElementById('loading');
-      loading.style.display = 'block';
-      let step = 1;
-      const steps = [
-        'Reading Files...',
-        'Extracting Metadata...',
-        'Grouping Memories...',
-        'Generating Memory...'
-      ];
-      function nextStep() {
-        if (photosProcessed && step < steps.length) {
-          step = steps.length;
+        const files = event.target.files;
+        if (!files.length) return;
+        photosProcessed = false;
+        const loading = document.getElementById('loading');
+        loading.style.display = 'block';
+        let step = 1;
+        const steps = [
+            'Reading Files...',
+            'Extracting Metadata...',
+            'Grouping Memories...',
+            'Generating Memory...'
+        ];
+        function nextStep() {
+            if (photosProcessed && step < steps.length) {
+                step = steps.length;
+            }
+            if (step > steps.length) {
+                loading.innerText = 'Done!';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    showMemories();
+                    saveMemoriesToDB(groupedPhotos);
+                }, 1000);
+                return;
+            }
+            loading.innerText = steps[step - 1];
+            step++;
+            setTimeout(nextStep, 1000);
         }
-        if (step > steps.length) {
-          loading.innerText = 'Done!';
-          setTimeout(() => {
-            loading.style.display = 'none';
-            showMemories();
-            saveMemoriesToDB(groupedPhotos);
-          }, 1000);
-          return;
-        }
-        loading.innerText = steps[step - 1];
-        step++;
-        setTimeout(nextStep, 1000);
-      }
-      nextStep();
-      const filePromises = Array.from(files).map(file => new Promise((resolve, reject) => {
-         EXIF.getData(file, function() {
-              const dateTag = EXIF.getTag(this, 'DateTime');
-              let photoDate = dateTag ? new Date(dateTag.replace(/:/g, '-')) : new Date();
-              const latArray = EXIF.getTag(this, 'GPSLatitude');
-              const lonArray = EXIF.getTag(this, 'GPSLongitude');
-              const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
-              const lonRef = EXIF.getTag(this, 'GPSLongitudeRef');
-              let lat = latArray ? convertGPSToDecimal(latArray, latRef) : 0;
-              let lon = lonArray ? convertGPSToDecimal(lonArray, lonRef) : 0;
-              resolve({ file, date: photoDate, lat, lon });
-         });
-      }));
-      Promise.all(filePromises).then(photoData => {
-          console.log('All photo data:', photoData);
-          groupedPhotos = groupPhotosByLocationAndTime(photoData);
-          console.log('Grouped Photos:', groupedPhotos);
-          photosProcessed = true;
-      }).catch(err => {
-          console.error('Error processing files:', err);
-          loading.innerText = 'Error processing files.';
-      });
+        nextStep();
+        const filePromises = Array.from(files).map(file => new Promise((resolve, reject) => {
+            EXIF.getData(file, function () {
+                const dateTag = EXIF.getTag(this, 'DateTime');
+                let photoDate = dateTag ? new Date(dateTag.replace(/:/g, '-')) : new Date();
+                const latArray = EXIF.getTag(this, 'GPSLatitude');
+                const lonArray = EXIF.getTag(this, 'GPSLongitude');
+                const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
+                const lonRef = EXIF.getTag(this, 'GPSLongitudeRef');
+                let lat = latArray ? convertGPSToDecimal(latArray, latRef) : 0;
+                let lon = lonArray ? convertGPSToDecimal(lonArray, lonRef) : 0;
+                const tags = EXIF.getAllTags(this); // Get all EXIF tags
+                resolve({ file, date: photoDate, lat, lon, tags }); // Include all tags
+            });
+        }));
+        Promise.all(filePromises).then(photoData => {
+            console.log('All photo data:', photoData);
+            groupedPhotos = groupPhotosByLocationAndTime(photoData);
+            console.log('Grouped Photos:', groupedPhotos);
+            photosProcessed = true;
+        }).catch(err => {
+            console.error('Error processing files:', err);
+            loading.innerText = 'Error processing files.';
+        });
     }
 
     function groupPhotosByLocationAndTime(photos) {
-      const groups = [];
-      photos.forEach(photo => {
-        let added = false;
-        groups.forEach(group => {
-          const groupPhoto = group[0];
-          const dist = haversine(photo.lat, photo.lon, groupPhoto.lat, groupPhoto.lon);
-          const sameDay = photo.date.toDateString() === groupPhoto.date.toDateString();
-          if (dist < 1 && sameDay) {
-            group.push(photo);
-            added = true;
-          }
+        const groups = [];
+        locations = []; //reset
+        photos.forEach(photo => {
+            let added = false;
+            groups.forEach(group => {
+                const groupPhoto = group[0];
+                const dist = haversine(photo.lat, photo.lon, groupPhoto.lat, groupPhoto.lon);
+                const sameDay = photo.date.toDateString() === groupPhoto.date.toDateString();
+                if (dist < 1 && sameDay) {
+                    group.push(photo);
+                    added = true;
+                }
+            });
+            if (!added) {
+                 const locationName = getLocationName(photo.lat, photo.lon);
+                  if(locationName){
+                     locations.push({lat: photo.lat, lon: photo.lon, name: locationName})
+                  }
+                groups.push([photo]);
+            }
         });
-        if (!added) {
-          groups.push([photo]);
-        }
-      });
-      return groups;
+        return groups;
     }
 
     function haversine(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat / 2) ** 2 +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon / 2) ** 2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+  function getLocationName(latitude, longitude) {
+        // In a real application, you would use a geocoding service
+        // like Google Maps Geocoding API, OpenStreetMap's Nominatim, or similar.
+        // This is a simplified example and will not be very accurate.
+
+        if (latitude && longitude) {
+            // Very rough approximation for demonstration
+             if (latitude > 34 && latitude < 41 && longitude > -118 && longitude < -115) {
+                return "Los Angeles, CA";
+            } else if (latitude > 40 && latitude < 48 && longitude > -74 && longitude < -70) {
+                return "New York, NY";
+            } else if (latitude > 37 && latitude < 40 && longitude > -122 && longitude < -121) {
+                return "San Francisco, CA";
+            } else if (latitude > 47 && latitude < 48 && longitude > -122 && longitude < -121) {
+                return "Seattle, WA";
+            } else if (latitude > 25 && latitude < 30 && longitude > -80 && longitude < -79) {
+                return "Miami, FL";
+            }
+            // Add more locations
+            else if (latitude > 43 && latitude < 46 && longitude > -79 && longitude < -70) {
+                return "Boston, MA";
+            } else if (latitude > 33 && latitude < 37 && longitude > -84 && longitude < -80) {
+                return "Atlanta, GA";
+            } else if (latitude > 41 && latitude < 42 && longitude > -88 && longitude < -87) {
+                return "Chicago, IL";
+            } else if (latitude > 32 && latitude < 35 && longitude > -97 && longitude < -95) {
+                return "Dallas, TX";
+            } else if (latitude > 36 && latitude < 41 && longitude > -82 && longitude < -75) {
+                return "Washington, DC";
+            } else if (latitude > 44 && latitude < 50 && longitude > -70 && longitude < -60) {
+                return "Canada";
+            } else if (latitude > 30 && latitude < 35 && longitude > -90 && longitude < -80) {
+                return "New Orleans, LA";
+            } else if (latitude > 40 && latitude < 45 && longitude > -100 && longitude < -90) {
+                return "Minneapolis, MN";
+            }
+            else {
+                return "Unknown Location";
+            }
+        }
+        return null;
     }
 
     function generateMemoryTitle(group) {
-      const firstPhoto = group[0];
-      const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-      const formattedDate = firstPhoto.date.toLocaleDateString('en-US', dateOptions);
-      if (Math.abs(firstPhoto.lat) > 0.1 || Math.abs(firstPhoto.lon) > 0.1) {
-         return `Memories from (${firstPhoto.lat.toFixed(2)}, ${firstPhoto.lon.toFixed(2)}) on ${formattedDate}`;
-      } else {
-         return `Memories on ${formattedDate}`;
-      }
+        const firstPhoto = group[0];
+        const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+        const formattedDate = firstPhoto.date.toLocaleDateString('en-US', dateOptions);
+        let title = formattedDate; // Default title
+        let locationName = null;
+        let hasValidDate = firstPhoto.date instanceof Date && !isNaN(firstPhoto.date.getTime());
+
+        // Check for location first if date is invalid
+        if (!hasValidDate && firstPhoto.lat && firstPhoto.lon) {
+            locationName = locations.find(loc => loc.lat === firstPhoto.lat && loc.lon === firstPhoto.lon)?.name;
+            if (locationName) {
+                title = `${locationName}`;
+            } else {
+                title = `Memories from (${firstPhoto.lat.toFixed(2)}, ${firstPhoto.lon.toFixed(2)})`;
+            }
+        }
+       else if (hasValidDate) {
+             title = `${formattedDate}`;
+       }
+
+        // Check for specific tags (example: looking for keywords)
+        if (firstPhoto.tags) {
+            const keywords = ['dog', 'dogs', 'puppy', 'puppies', 'cat', 'cats', 'kitten', 'kittens'];
+            const peopleKeywords = ['person', 'people', 'man', 'woman', 'child', 'group'];
+            const description = firstPhoto.tags.Description || ''; // Example tag
+            const foundKeyword = keywords.find(keyword => description.toLowerCase().includes(keyword));
+            const foundPersonKeyword = peopleKeywords.find(keyword => description.toLowerCase().includes(keyword));
+
+            if (foundKeyword) {
+                title = locationName ? `${locationName} - Animals!` : `Animals!`;
+            }
+             else if (foundPersonKeyword) {
+                title = locationName ? `${locationName} - People!` : `People!`;
+            }
+        }
+        if (group.length > 3) {
+             title = locationName ? `${locationName} - ${hasValidDate? formattedDate :  "Memories"}` : (hasValidDate ? formattedDate : "Memories");
+        }
+        return title;
     }
 
     function showMemories() {
-      if (groupedPhotos.length === 0) {
-        alert("No memories were created. Please upload more photos.");
-        return;
-      }
-      document.getElementById('home').style.display = 'none';
-      memoryContainer.style.display = 'flex';
-      memoryContainer.innerHTML = ''; // Clear previous memories
-      groupedPhotos.forEach((group, index) => {
-        const memoryDiv = document.createElement('div');
-        memoryDiv.classList.add('memory');
-        const memoryTitle = document.createElement('h3');
-        memoryTitle.innerText = generateMemoryTitle(group);
-        memoryDiv.appendChild(memoryTitle);
+        if (groupedPhotos.length === 0) {
+            alert("No memories were created. Please upload more photos.");
+            return;
+        }
+        document.getElementById('home').style.display = 'none';
+        memoryContainer.style.display = 'flex';
+        memoryContainer.innerHTML = ''; // Clear previous memories
+        groupedPhotos.forEach((group, index) => {
+            const memoryDiv = document.createElement('div');
+            memoryDiv.classList.add('memory');
+            const memoryTitle = document.createElement('h3');
+            memoryTitle.innerText = generateMemoryTitle(group);
+            memoryDiv.appendChild(memoryTitle);
 
-        // Select a random photo for the memory card
-        const randomPhotoIndex = Math.floor(Math.random() * group.length);
-        const randomPhoto = group[randomPhotoIndex];
+            // Select a random photo for the memory card
+            const randomPhotoIndex = Math.floor(Math.random() * group.length);
+            const randomPhoto = group[randomPhotoIndex];
 
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(randomPhoto.file);
-        memoryDiv.appendChild(img);
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(randomPhoto.file);
+            memoryDiv.appendChild(img);
 
-        memoryDiv.addEventListener('click', () => {
-          openSlideshow(index);
+            memoryDiv.addEventListener('click', () => {
+                openSlideshow(index);
+            });
+            memoryContainer.appendChild(memoryDiv);
         });
-        memoryContainer.appendChild(memoryDiv);
-      });
     }
 
     function saveMemoriesToDB(data) {
-      const request = indexedDB.open("memorifyDB", 1);
-      request.onupgradeneeded = function(e) {
-        let db = e.target.result;
-        if (!db.objectStoreNames.contains("memories")) {
-          db.createObjectStore("memories", { keyPath: "id" });
-        }
-      };
-      request.onsuccess = function(e) {
-        let db = e.target.result;
-        let tx = db.transaction("memories", "readwrite");
-        let store = tx.objectStore("memories");
-        store.put({ id: "groupedPhotos", data: data });
-        tx.oncomplete = function() {
-          console.log("Memories saved to cache.");
+        const request = indexedDB.open("memorifyDB", 1);
+        request.onupgradeneeded = function (e) {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains("memories")) {
+                db.createObjectStore("memories", { keyPath: "id" });
+            }
         };
-      };
-      request.onerror = function(e) {
-        console.error("Error opening IndexedDB", e);
-      };
+        request.onsuccess = function (e) {
+            let db = e.target.result;
+            let tx = db.transaction("memories", "readwrite");
+            let store = db.objectStore("memories");
+            store.put({ id: "groupedPhotos", data: data });
+            tx.oncomplete = function () {
+                console.log("Memories saved to cache.");
+            };
+        };
+        request.onerror = function (e) {
+            console.error("Error opening IndexedDB", e);
+        };
     }
 
     function loadMemoriesFromDB() {
-      const request = indexedDB.open("memorifyDB", 1);
-      request.onupgradeneeded = function(e) {
-        let db = e.target.result;
-        if (!db.objectStoreNames.contains("memories")) {
-          db.createObjectStore("memories", { keyPath: "id" });
-        }
-      };
-      request.onsuccess = function(e) {
-        let db = e.target.result;
-        let tx = db.transaction("memories", "readonly");
-        let store = tx.objectStore("memories");
-        let getRequest = store.get("groupedPhotos");
-        getRequest.onsuccess = function() {
-          if (getRequest.result) {
-            groupedPhotos = getRequest.result.data;
-            console.log("Loaded cached memories:", groupedPhotos);
-            showMemories();
-          } else {
-            console.log("No cached memories found, showing home screen.");
-          }
+        const request = indexedDB.open("memorifyDB", 1);
+        request.onupgradeneeded = function (e) {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains("memories")) {
+                db.createObjectStore("memories", { keyPath: "id" });
+            }
         };
-      };
-      request.onerror = function(e) {
-        console.error("Error loading IndexedDB", e);
-      };
+        request.onsuccess = function (e) {
+            let db = e.target.result;
+            let tx = db.transaction("memories", "readonly");
+            let store = db.objectStore("memories");
+            let getRequest = store.get("groupedPhotos");
+            getRequest.onsuccess = function () {
+                if (getRequest.result) {
+                    groupedPhotos = getRequest.result.data;
+                    console.log("Loaded cached memories:", groupedPhotos);
+                    showMemories();
+                } else {
+                    console.log("No cached memories found, showing home screen.");
+                }
+            };
+        };
+        request.onerror = function (e) {
+            console.error("Error loading IndexedDB", e);
+        };
     }
-    let audioPlayer;
+
     const musicFiles = [
-      'https://www.bensound.com/bensound-music/bensound-happyrock.mp3',
-      'https://www.bensound.com/bensound-music/bensound-sunny.mp3',
-      'https://www.bensound.com/bensound-music/bensound-ukulele.mp3',
-      'https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3',
-      'https://www.bensound.com/bensound-music/bensound-memories.mp3'
+        'https://www.bensound.com/bensound-music/bensound-happyrock.mp3',
+        'https://www.bensound.com/bensound-music/bensound-sunny.mp3',
+        'https://www.bensound.com/bensound-music/bensound-ukulele.mp3',
+        'https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3',
+        'https://www.bensound.com/bensound-music/bensound-memories.mp3'
     ];
     function openSlideshow(groupIndex) {
-      currentGroupIndex = groupIndex;
-      currentSlideIndex = 0;
-      const group = groupedPhotos[groupIndex];
-      slideshowTitle.innerText = generateMemoryTitle(group);
-      loadSlide(currentSlideIndex);
-      slideshowContainer.style.display = 'flex';
-      updateNavButtons();
-      startSlideshowTimer();
+        currentGroupIndex = groupIndex;
+        currentSlideIndex = 0;
+        const group = groupedPhotos[groupIndex];
+        slideshowTitle.innerText = generateMemoryTitle(group);
+        // Clear existing content
+        slideImages.forEach(img => {
+            img.src = '';
+        });
+        slides.forEach(slide => {
+            slide.style.display = 'none';
+        });
 
-      //start music
-      if (!audioPlayer) {
-        audioPlayer = new Audio();
-        audioPlayer.loop = true;
-      }
-      const storedMusicUrl = localStorage.getItem('currentMusic');
-      if (storedMusicUrl) {
-        audioPlayer.src = storedMusicUrl;
-        audioPlayer.play().catch(e => console.error("Error playing music", e));
-      } else {
-        const randomMusicIndex = Math.floor(Math.random() * musicFiles.length);
-        const chosenMusic = musicFiles[randomMusicIndex];
-        audioPlayer.src = chosenMusic;
-        localStorage.setItem('currentMusic', chosenMusic);
-        audioPlayer.play().catch(e => console.error("Error playing music", e));
-      }
+        // Load images for the group
+        group.forEach((photo, index) => {
+            if (index < slideImages.length) { // Use available slots
+                slideImages[index].src = URL.createObjectURL(photo.file);
+                slides[index].style.display = 'flex'; //show the slide
+            } else {
+                //create new image and slide.
+                const newSlide = document.createElement('div');
+                newSlide.classList.add('slide');
+                const newImage = document.createElement('img');
+                newImage.src = URL.createObjectURL(photo.file);
+                newSlide.appendChild(newImage);
+                slideshowContainer.querySelector('.slideshow-content').appendChild(newSlide);
+                slides.push(newSlide);
+                slideImages.push(newImage)
+                newSlide.style.display = 'flex';
+            }
+        });
+        slideshowContainer.style.display = 'flex';
+        updateNavButtons();
+        startSlideshowTimer(group); // Pass the group to startSlideshowTimer
+
+        //start music
+        if (!audioPlayer) {
+            audioPlayer = new Audio();
+            audioPlayer.loop = true;
+        }
+        const storedMusicUrl = localStorage.getItem('currentMusic');
+        if (storedMusicUrl) {
+            audioPlayer.src = storedMusicUrl;
+            audioPlayer.play().catch(e => console.error("Error playing music", e));
+        } else {
+            const randomMusicIndex = Math.floor(Math.random() * musicFiles.length);
+            const chosenMusic = musicFiles[randomMusicIndex];
+            audioPlayer.src = chosenMusic;
+            localStorage.setItem('currentMusic', chosenMusic);
+            audioPlayer.play().catch(e => console.error("Error playing music", e));
+        }
     }
 
     function closeSlideshow() {
-      slideshowContainer.style.display = 'none';
-      clearTimeout(slideshowTimeout);
-      clearInterval(slideshowInterval);
+        slideshowContainer.style.display = 'none';
+        clearTimeout(slideshowTimeout);
+        clearInterval(slideshowInterval);
 
-      //stop music
-      if (audioPlayer) {
-        audioPlayer.pause();
-        audioPlayer.src = '';
-      }
+        //stop music
+        if (audioPlayer) {
+            audioPlayer.pause();
+            audioPlayer.src = '';
+        }
     }
 
-    function loadSlide(index) {
-      const group = groupedPhotos[currentGroupIndex];
-      if (!group || group.length === 0) return;
-      const actualIndex = index % group.length;
-      const photo = group[actualIndex];
-      slideImages[0].src = URL.createObjectURL(photo.file);
-      slides.forEach((slide, i) => {
-        slide.style.display = i === 0 ? 'flex' : 'none';
-        slide.style.animation = ''; // Reset animation
-      });
+  function loadSlide(index) {
+        const group = groupedPhotos[currentGroupIndex];
+        if (!group || group.length === 0) return;
+        const newIndex = index % group.length;
+
+        // Deactivate the current slide
+        slides[currentSlideIndex].classList.remove('active');
+        slides[currentSlideIndex].style.animation = ''; // Reset any previous animation
+
+        currentSlideIndex = newIndex;
+
+        // Activate the new slide
+        slides[currentSlideIndex].classList.add('active');
+        const photo = group[currentSlideIndex];
+        slideImages[currentSlideIndex].src = URL.createObjectURL(photo.file);
+
+        if (transitionStyle === 'fade') {
+             slides[currentSlideIndex].style.animation = 'fadeIn 1s ease-in-out';
+        }
+        else if (transitionStyle === 'slide') {
+              if (index > currentSlideIndex) {
+                slides[currentSlideIndex].style.animation = 'slideInRight 0.5s ease-in-out';
+            } else {
+                 slides[currentSlideIndex].style.animation = 'slideInLeft 0.5s ease-in-out';
+            }
+        }
+        else if (transitionStyle === 'zoom'){
+             slides[currentSlideIndex].style.animation = 'zoomIn 0.5s ease-in-out';
+        }
     }
 
     function nextSlide() {
-      currentSlideIndex++;
-      loadSlide(currentSlideIndex);
-      updateNavButtons();
-      startSlideshowTimer();
+        loadSlide(currentSlideIndex + 1);
+        updateNavButtons();
+        startSlideshowTimer(groupedPhotos[currentGroupIndex]);
     }
 
     function prevSlide() {
-      currentSlideIndex--;
-      loadSlide(currentSlideIndex);
-      updateNavButtons();
-      startSlideshowTimer();
+       loadSlide(currentSlideIndex - 1);
+        updateNavButtons();
+        startSlideshowTimer(groupedPhotos[currentGroupIndex]);
     }
 
     function updateNavButtons() {
-      const group = groupedPhotos[currentGroupIndex];
-      prevButton.disabled = group.length <= 1;
-      nextButton.disabled = group.length <= 1;
+        const group = groupedPhotos[currentGroupIndex];
+        prevButton.disabled = group.length <= 1;
+        nextButton.disabled = group.length <= 1;
     }
 
-    function startSlideshowTimer() {
-      clearInterval(slideshowInterval);
-      slideshowInterval = setInterval(() => {
-        // Apply transition
-        slides.forEach(slide => {
-          slide.style.animation = 'fade 1s ease-in-out';
-        });
-        nextSlide();
-      }, 5000);
+    function startSlideshowTimer(group) { // Added group parameter
+        clearInterval(slideshowInterval);
+        if (!group || group.length <= 1) return; // Don't start if no group or only one image
+        slideshowInterval = setInterval(() => {
+            nextSlide();
+        }, 5000);
     }
   </script>
+
+
 </body>
 </html>
