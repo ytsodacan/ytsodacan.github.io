@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Page Website</title>
+    <style>
+        body {
+            font-family: "Comic Neue";
+            margin: 0;
+            padding: 0;
+            
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: url('Normal-Select.png'), auto;
+        }
+        * {
+            box-sizing: border-box;
+            cursor: url('Normal-Select.png'), auto;
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+        .top-bar .icon-button {
+            width: 40px;
+            height: 40px;
+            background-color: #444;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .top-bar .icon-button:hover {
+            background-color: #555;
+        }
+        .top-bar .search-bar {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            padding: 5px;
+        }
+        .top-bar .search-bar input {
+            border: none;
+            outline: none;
+            flex-grow: 1;
+            padding: 5px;
+        }
+        .top-bar .search-bar input::placeholder {
+            color: #aaa;
+        }
+        .top-bar .search-bar span {
+            margin-left: 10px;
+            color: black;
+        }
+        .content {
+            display: none;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+           
+        }
+        .content.active {
+            display:flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .top-bar-text {
+            font-size: 20px;
+            padding:3px;   
+        }
+        .topbar-buttons {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+        .mainsearch::placeholder {
+            color: black;
+            opacity: 0.8;
+            text-align: center;
+            font-family: "Comic Neue";
+            font-weight: 1000;
+            font-size: 30px;
+            
+            vertical-align: middle;
+            margin-top: -10px;
+
+        }
+        .topbutton {
+            border-radius: 7px;
+            border-color:transparent;
+            background-color: rgb(252, 252, 252);
+            color: black;
+            padding:4px;
+            padding-right: 10px;
+            padding-left: 10px;
+            font-family: "Comic Neue";
+            font-weight: 700;
+        }
+        .close {
+            border-radius: 7px;
+            border-color:transparent;
+            background-color: rgb(255, 82, 82);
+            color: black;
+            padding:5px;
+            padding-right: 10px;
+            padding-left: 10px;
+            font-family: "Comic Neue";
+            font-weight: 2000;
+            font-size: 13px;
+            
+        }
+        .home {
+            
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: grey;
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            min-height: calc(100vh - 89.2px);
+            padding-top: 0;
+        }
+        img {
+            margin-top: -250px; /* adjust as needed */
+        }
+        .mainsearch {
+            width: 60%;
+            height: 40px;
+            border-radius: 50px;
+            border: solid 2px black;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-top: -30px;
+            text-align: center;
+            font-family: "Comic Neue";
+            font-weight: 1000;
+            font-size: 30px;
+            
+            vertical-align: middle;
+            margin-top: -10px;
+        }
+        .homebuttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); /* Controls the number of columns */
+            
+            width: 300px;
+            margin-left: 50px;
+        }
+        .homebutton {
+            
+            font-size: 28px;
+            border-radius: 15px;
+            width: 100px;
+            height: 100px;
+            border-color: black;
+            color: white;;
+            border-width: 5px;
+            border-style: solid;
+            text-shadow: 
+    -2px -2px 0 black, 
+     2px -2px 0 black, 
+    -2px  2px 0 black, 
+     2px  2px 0 black,
+    -1px  0px 0 black, 
+     1px  0px 0 black, 
+     0px -1px 0 black, 
+     0px  1px 0 black;
+        }
+        .homebutton:hover {
+            
+            font-size: 28px;
+            border-radius: 15px;
+            width: 100px;
+            height: 100px;
+            border-color: black;
+            border-width: 5px;
+            border-style: solid;
+            background-color: rgb(224, 224, 224);
+            text-shadow: 
+    -2px -2px 0 black, 
+     2px -2px 0 black, 
+    -2px  2px 0 black, 
+     2px  2px 0 black,
+    -1px  0px 0 black, 
+     1px  0px 0 black, 
+     0px -1px 0 black, 
+     0px  1px 0 black;
+        }
+
+</style>
+</head>
+<body>
+    <div class="top-bar-text">
+    <b id="toptext">home</b>
+        <div class="topbar-buttons">
+            <button class="topbutton">--</button>
+            <button class="topbutton">∎</button>
+            <b><button class="topbutton, close">X</button></b>
+        </div>
+    
+       
+    </div>
+    <div class="top-bar">
+        <div class="icon-button" onclick="showContent('page-home')">🏠</div>
+        <div class="icon-button" onclick="showContent('page-about')">ℹ️</div>
+        <div class="icon-button" onclick="showContent('page-stats')">📊</div>
+        <div class="search-bar">
+            <span>utg:</span>
+            <input type="text" id="search-input" placeholder="" onkeypress="handleSearch(event)">
+        </div>
+    
+    </div>
+
+
+    <div id="page-home" class="content active home" style = "height:100%">
+        <img src="Image.png" alt="Home Image">
+        <input class="mainsearch" type="text" id="home-search" placeholder="search" onkeypress="handleHomeSearch(event)">
+        <b style="font-size: 25px;  margin-top: 15px; color:white; text-shadow: 2px 2px 5px black, -2px -2px 5px black, 2px -2px 5px black, -2px 2px 5px black;">your saved pages will appear on this page</b>
+        <div class="homebuttons"><button class="homebutton" onclick="showContent('page-about')">about</button><button class="homebutton" onclick="showContent('page-stats')">stats</button></div>
+    </div>
+    <div id="page-about" class="content">
+        <h1>About Us</h1>
+        <p>This is the about section of the website.</p>
+    </div>
+    <div id="page-stats" class="content">
+        <h1>Stats</h1>
+        <p>This is the stats section of the website.</p>
+    </div>
+    <div id="not-found" class="content">
+        <h1>404 - Page Not Found</h1>
+        <p>The page you are looking for does not exist.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            const toptext = document.getElementById('toptext');
+            const updateSearchBar = (sectionId) => {
+            searchInput.placeholder = sectionId.replace('page-', '');
+            toptext.textContent = sectionId.replace('page-', 'Unititled Tag Game - ');
+            };
+
+            const originalShowContent = showContent;
+            showContent = (sectionId) => {
+            originalShowContent(sectionId);
+            updateSearchBar(sectionId);
+            };
+
+            // Initialize the search bar with the default active page
+            const activeSection = document.querySelector('.content.active');
+            if (activeSection) {
+            updateSearchBar(activeSection.id);
+            }
+        });
+        function showContent(sectionId) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.classList.remove('active'));
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('active');
+            } else {
+                document.getElementById('not-found').classList.add('active');
+            }
+        }
+
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('search-input').value.trim();
+                const sectionId = input.startsWith('utg:') ? 'page-' + input.slice(4) : 'page-' + input; // Handle both cases
+                showContent(sectionId);
+            }
+        }
+        function handleHomeSearch(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('home-search').value.trim();
+                const sectionId = input.startsWith('utg:') ? 'page-' + input.slice(4) : 'page-' + input; // Handle both cases
+                showContent(sectionId);
+            }
+        }
+    </script>
+</body>
+</html>
