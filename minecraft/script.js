@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const buttonToGui = {
         'Singleplayer': 'singleplayer-gui',
         'Multiplayer': 'multiplayer-gui',
-        'Options': 'options-gui',
-        '': 'language-gui',
+        'qweqew': 'options-gui',
+        'wqeqwe': 'language-gui',
         // Add mappings for other buttons...
     };
 
