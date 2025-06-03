@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Soda Craft</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+  <!-- partial:index.partial.html -->
+  <!--//- Menu-->
+  <audio id="button-sfx" src="minecraft_click.mp3" preload="auto"></audio>
+
+  <div id="singleplayer-gui" class="gui-overlay hidden">
+    <div class="gui-content">
+      <h2 style="margin-bottom: 10px;">Clients</h2>
+      <p></p>
+      <div id="world-list" class="mc-world-list">
+        <div class="world-entry selected" data-world="eaglerforge" onclick="selectWorld(this)">
+          <div class="thumbnail"></div>
+          <div class="world-info">
+            <div class="world-name">Eaglerforge</div>
+            <div class="world-meta">5/6/24</div>
+            <div class="world-meta">Modded, Version: 1.20.4</div>
+          </div>
+        </div>
+
+        <div class="world-entry" data-world="resent" onclick="selectWorld(this)">
+          <div class="thumbnail"></div>
+          <div class="world-info">
+            <div class="world-name">Resent Client</div>
+            <div class="world-meta"></div>
+            <div class="world-meta">Modded, Version: 1.8.8</div>
+          </div>
+        </div>
+        <div class="world-entry" data-world="eagly" onclick="selectWorld(this)">
+          <div class="thumbnail eagly"></div>
+          <div class="world-info">
+            <div class="world-name">EaglyMC</div>
+            <div class="world-meta"></div>
+            <div class="world-meta">Version: 1.20</div>
+          </div>
+        </div>
+        <div class="world-entry" data-world="astra" onclick="selectWorld(this)">
+          <div class="thumbnail astra"></div>
+          <div class="world-info">
+            <div class="world-name">Astra Client</div>
+            <div class="world-meta"></div>
+            <div class="world-meta">Version: 1.8.8</div>
+          </div>
+        </div>
+        <div class="world-entry" data-world="starlike" onclick="selectWorld(this)">
+          <div class="thumbnail star"></div>
+          <div class="world-info">
+            <div class="world-name">Starlike Client</div>
+            <div class="world-meta"></div>
+            <div class="world-meta">Version: 1.8.8</div>
+          </div>
+        </div>
+      </div>
+      <div
+        style="position: absolute; left: 0; right: 0; bottom: 70px; display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%;">
+        <button class="mc-button" style="width:30vw; height: 40px; font-family: Minecraftia; margin-right: 20px;"
+          onclick="playSelectedWorld()">
+          <div class="title">Play</div>
+        </button>
+        <button class="mc-button" style="width:30vw; height: 40px; font-family: Minecraftia;"
+          onclick="alert('Loading ' + selectedWorld);">
+          <div class="title">Download</div>
+        </button>
+
+      </div>
+      <div
+        style="position: absolute; left: 0; right: 0; bottom: 20px; display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%;">
+        <button class="mc-button close-btn"
+          style="width:62vw; height: 40px; font-family: Minecraftia; margin-right: 0px;">
+          <div class="title">Close</div>
+        </button>
+      </div>
+
+
+
+    </div>
+
+  </div>
+  </div>
+
+  <div id="multiplayer-gui" class="gui-overlay hidden">
+    <div class="gui-content">
+      <h2 style="margin-bottom: 10px;">Servers & Relays</h2>
+      <p></p>
+      <div id="world-list" class="mc-world-list">
+        <div class="world-entry" >
+          <div class="thumbnail"></div>
+          <div class="world-info">
+            <div class="world-name">ArchMC</div>
+            <div class="world-meta">mc.arch.lol</div>
+            <div class="world-meta" id="archmcstatus">Modded, Version: 1.20.4</div>
+          </div>
+        </div>
+
+        <div class="world-entry" >
+          <div class="thumbnail"></div>
+          <div class="world-info">
+            <div class="world-name">WORKING ON ADDING OTHER SERVERS!</div>
+            <div class="world-meta"></div>
+          </div>
+        </div>
+      </div>
+      <div style="position: absolute; left: 0; right: 0; bottom: 20px; display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%;">
+        <button class="mc-button close-btn"
+          style="width:62vw; height: 40px; font-family: Minecraftia; margin-right: 0px;">
+          <div class="title">Close</div>
+        </button>
+      </div>
+
+
+
+    </div>
+  </div>
+  </div>
+  <div id="options-gui" class="gui-overlay hidden">
+    <div class="gui-content">
+      <h2>options</h2>
+      <p>Custom background and content here.</p>
+      <button class="close-btn">Close</button>
+    </div>
+  </div>
+  <div id="language-gui" class="gui-overlay hidden">
+    <div class="gui-content">
+      <h2>language</h2>
+      <p>Custom background and content here.</p>
+      <button class="close-btn">Close</button>
+    </div>
+  </div>
+  <img class="titletext" src="title.png">
+  <div class="mc-menu">
+
+    <div class="mc-button full">
+      <div class="title">Singleplayer</div>
+    </div>
+    <div class="mc-button full">
+      <div class="title">Multiplayer</div>
+    </div>
+    <div class="mc-button full">
+      <a href="https://github.com/ytsodacan">
+        <div class="title">Github</div>
+      </a>
+    </div>
+    <div class="double">
+      <div class="mc-button full">
+        <div class="title">Options</div>
+      </div>
+      <div onclick="window.location.href='about:blank';" class="mc-button full">
+        <div class="title">Quit Game</div>
+      </div>
+    </div>
+    <div class="mc-button lang language">
+
+      <div class="title"><img class="lang" src="lang.png" alt="Lang" /></div>
+    </div>
+  </div>
+  <!-- partial -->
+  <script src="./script.js"></script>
+
+</body>
+
+<script>
+  let selectedWorld = "eaglerforge";
+
+  function selectWorld(el) {
+    document.querySelectorAll('.mc-world-list .world-entry')
+      .forEach(entry => entry.classList.remove('selected'));
+
+    el.classList.add('selected');
+    selectedWorld = el.getAttribute('data-world');
+  }
+
+  function playSelectedWorld() {
+    // Example: change window content or redirect based on selectedWorld
+    // For demo, I'll do a simple redirect or alert:
+
+    if (selectedWorld === "eaglerforge") {
+
+      window.location.href = "ver/eaglerforge.html"; // example redirect
+    } else if (selectedWorld === "resent") {
+
+      window.location.href = "ver/resent.html";
+    } else if (selectedWorld === "eagly") {
+
+      window.location.href = "ver/eagly.html";
+    } else if (selectedWorld === "astra") {
+
+      window.location.href = "ver/astrajs.html";
+    } else if (selectedWorld === "starlike") {
+
+      window.location.href = "ver/starlike.html";
+    } else {
+      alert("Unknown client: " + selectedWorld);
+    }
+  }
+  const sfx = document.getElementById('button-sfx');
+
+  if (!sfx || typeof sfx.play !== 'function') {
+    console.error('Audio element not found or .play() not available.');
+  } else {
+    // Select all buttons AND all elements with class 'mc-button'
+    const clickableElements = [
+      ...document.querySelectorAll('button'),
+      ...document.querySelectorAll('.mc-button')
+    ];
+
+    // Remove duplicates (in case some buttons have mc-button class)
+    const uniqueElements = [...new Set(clickableElements)];
+
+    uniqueElements.forEach(el => {
+      el.addEventListener('click', () => {
+        sfx.currentTime = 0;
+        sfx.play().catch(e => console.error('Audio play failed:', e));
+      });
+    });
+  }
+</script>
+
+</html>
