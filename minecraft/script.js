@@ -47,5 +47,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+
+
+    const bgm = document.getElementById('bgm');
+
+    function unmuteAudio() {
+      bgm.muted = false;
+      bgm.play(); // some browsers need this after unmuting
+    }
+    
     checkarch(); // Initial check
     setInterval(checkarch, 5000); // Every 5 seconds

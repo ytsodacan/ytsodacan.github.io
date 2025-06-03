@@ -12,6 +12,10 @@
   <!-- partial:index.partial.html -->
   <!--//- Menu-->
   <audio id="button-sfx" src="minecraft_click.mp3" preload="auto"></audio>
+  <audio id="bgm" autoplay loop>
+  <source src="minecraft.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+  </audio>
 
   <div id="singleplayer-gui" class="gui-overlay hidden">
     <div class="gui-content">
@@ -62,11 +66,11 @@
       </div>
       <div
         style="position: absolute; left: 0; right: 0; bottom: 70px; display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%;">
-        <button class="mc-button" style="width:30vw; height: 40px; font-family: Minecraftia; margin-right: 20px;"
+        <button onclick="unmuteAudio()"  class="mc-button" style="width:30vw; height: 40px; font-family: Minecraftia; margin-right: 20px;"
           onclick="playSelectedWorld()">
           <div class="title">Play</div>
         </button>
-        <button class="mc-button" style="width:30vw; height: 40px; font-family: Minecraftia;"
+        <button onclick="unmuteAudio()"  class="mc-button" style="width:30vw; height: 40px; font-family: Minecraftia;"
           ">
           <a href="https://github.com/ytsodacan/ytsodacan.github.io/tree/main/minecraft/ver"><div class="title">Download</div></a> 
         </button>
@@ -74,7 +78,7 @@
       </div>
       <div
         style="position: absolute; left: 0; right: 0; bottom: 20px; display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%;">
-        <button class="mc-button close-btn"
+        <button onclick="unmuteAudio()"  class="mc-button close-btn"
           style="width:62vw; height: 40px; font-family: Minecraftia; margin-right: 0px;">
           <div class="title">Close</div>
         </button>
@@ -110,7 +114,7 @@
         </div>
       </div>
       <div style="position: absolute; left: 0; right: 0; bottom: 20px; display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%;">
-        <button class="mc-button close-btn"
+        <button onclick="unmuteAudio()"  class="mc-button close-btn"
           style="width:62vw; height: 40px; font-family: Minecraftia; margin-right: 0px;">
           <div class="title">Close</div>
         </button>
@@ -125,14 +129,14 @@
     <div class="gui-content">
       <h2>options</h2>
       <p>Custom background and content here.</p>
-      <button class="close-btn">Close</button>
+      <button onclick="unmuteAudio()"  class="close-btn">Close</button>
     </div>
   </div>
   <div id="language-gui" class="gui-overlay hidden">
     <div class="gui-content">
       <h2>language</h2>
       <p>Custom background and content here.</p>
-      <button class="close-btn">Close</button>
+      <button onclick="unmuteAudio()"  class="close-btn">Close</button>
     </div>
   </div>
   <img class="titletext" src="title.png">
