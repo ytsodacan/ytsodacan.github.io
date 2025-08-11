@@ -13,11 +13,13 @@
         font-family: sans-serif;
         color: white;
       }
+
       canvas {
         position: absolute;
         top: 0;
         left: 0;
       }
+
       #settingsToggle {
         position: absolute;
         top: 10px;
@@ -26,6 +28,7 @@
         cursor: pointer;
         z-index: 10;
       }
+
       #settingsPanel {
         position: absolute;
         top: 50px;
@@ -38,11 +41,13 @@
         gap: 10px;
         z-index: 10;
       }
+
       input[type="color"] {
         width: 40px;
         height: 40px;
         border: none;
       }
+
       iframe {
         position: absolute;
         bottom: 10px;
@@ -101,6 +106,7 @@
       let currentBuffer;
       let startTime = 0;
       let pausedAt = 0;
+
       function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -123,6 +129,7 @@
         };
         reader.readAsArrayBuffer(file);
       });
+
       function setupStereoAnalyzers(buffer) {
         const splitter = audioCtx.createChannelSplitter(2);
         analyserLeft = audioCtx.createAnalyser();
@@ -139,6 +146,7 @@
         gainNode.connect(audioCtx.destination);
         gainNode.gain.value = volumeSlider.value;
       }
+
       function playBuffer(buffer, offset = 0) {
         // Stop previous sourceNode if it's playing
         if (sourceNode) {
@@ -194,6 +202,7 @@
           playBuffer(currentBuffer, seekTime);
         }
       });
+
       function loadYouTube() {
         const url = document.getElementById('youtubeURL').value;
         const videoId = url.split('v=')[1]?.split('&')[0];
@@ -202,6 +211,7 @@
         youtubeFrame.style.display = 'block';
         // Note: Cannot analyze YouTube audio due to browser restrictions
       }
+
       function draw() {
         requestAnimationFrame(draw);
         const mode = document.getElementById('modeSelect').value;
@@ -298,3 +308,4 @@
     </script>
   </body>
 </html>
+
