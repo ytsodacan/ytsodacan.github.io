@@ -1,242 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Full-Screen Music Visualizer</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #000;
-      font-family: sans-serif;
-      color: white;
-    }
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    #settingsToggle {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 10;
-    }
-    #settingsPanel {
-      position: absolute;
-      top: 50px;
-      left: 10px;
-      background: rgba(0,0,0,0.8);
-      padding: 10px;
-      border-radius: 8px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 10;
-    }
-    input[type="color"] {
-      width: 40px;
-      height: 40px;
-      border: none;
-    }
-    #youtubeVideo {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <div id="settingsToggle">⚙️</div>
-
-  <div id="settingsPanel">
-    <input type="file" id="audioFile" accept="audio/*">
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
-    <input type="text" id="youtubeURL" placeholder="Paste YouTube URL">
-    <button onclick="loadYouTube()">Load YouTube</button>
-    <label>Mode:
-      <select id="modeSelect">
-        <option value="bars">Bars</option>
-        <option value="waveform">Waveform</option>
-        <option value="circle">Circle Spectrum</option>
-        <option value="particles">Particles</option>
-        <option value="gonio">Gonio Visual</option>
-      </select>
-    </label>
-    <label>Background: <input type="color" id="bgColor" value="#000000"></label>
-    <label>Visualizer: <input type="color" id="barColor" value="#00ffcc"></label>
-  </div>
-
-  <video id="youtubeVideo" controls></video>
-  <canvas id="visualizer"></canvas>
-
-  <script>
-    const canvas = document.getElementById('visualizer');
-    const ctx = canvas.getContext('2d');
-    const settingsToggle = document.getElementById('settingsToggle');
-    const settingsPanel = document.getElementById('settingsPanel');
-    const volumeSlider = document.getElementById('volume');
-    const video = document.getElementById('youtubeVideo');
-
-    let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 512;
-    let bufferLength = analyser.frequencyBinCount;
-    let dataArray = new Uint8Array(bufferLength);
-    let sourceNode;
-
-    // Resize canvas
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.onresize = resizeCanvas;
-    resizeCanvas();
-
-    // Toggle settings panel
-    settingsToggle.onclick = () => {
-      settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'flex' : 'none';
-    };
-
-    // File upload
-    document.getElementById('audioFile').addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        audioCtx.decodeAudioData(e.target.result, function (buffer) {
-          if (sourceNode) sourceNode.disconnect();
-          sourceNode = audioCtx.createBufferSource();
-          sourceNode.buffer = buffer;
-          const gainNode = audioCtx.createGain();
-          sourceNode.connect(analyser);
-          analyser.connect(gainNode);
-          gainNode.connect(audioCtx.destination);
-          gainNode.gain.value = volumeSlider.value;
-          sourceNode.start();
-          draw();
-        });
+  <head>
+    <meta charset="UTF-8">
+    <title>Full-Screen Music Visualizer</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #000;
+        font-family: sans-serif;
+        color: white;
+      }
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      #settingsToggle {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 10;
+      }
+      #settingsPanel {
+        position: absolute;
+        top: 50px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        border-radius: 8px;
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 10;
+      }
+      input[type="color"] {
+        width: 40px;
+        height: 40px;
+        border: none;
+      }
+      iframe {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 320px;
+        height: 180px;
+        border: none;
+        z-index: 5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="settingsToggle">⚙️</div>
+    <div id="settingsPanel">
+      <input type="file" id="audioFile" accept="audio/*">
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+      <label>Playback: <input type="range" id="seekBar" min="0" max="100" value="0">
+      </label>
+      <button id="playBtn">▶️</button>
+      <button id="pauseBtn">⏸️</button>
+      <input type="text" id="youtubeURL" placeholder="Paste YouTube URL">
+      <button onclick="loadYouTube()">Load YouTube</button>
+      <label>Mode: <select id="modeSelect">
+          <option value="bars">Bars</option>
+          <option value="waveform">Waveform</option>
+          <option value="circle">Circle Spectrum</option>
+          <option value="particles">Particles</option>
+          <option value="gonio">Gonio Visual</option>
+        </select>
+      </label>
+      <label>Background: <input type="color" id="bgColor" value="#000000">
+      </label>
+      <label>Visualizer: <input type="color" id="barColor" value="#00ffcc">
+      </label>
+    </div>
+    <iframe id="youtubeFrame" style="display:none;"></iframe>
+    <canvas id="visualizer"></canvas>
+    <script>
+      const canvas = document.getElementById('visualizer');
+      const ctx = canvas.getContext('2d');
+      const settingsToggle = document.getElementById('settingsToggle');
+      const settingsPanel = document.getElementById('settingsPanel');
+      const volumeSlider = document.getElementById('volume');
+      const seekBar = document.getElementById('seekBar');
+      const playBtn = document.getElementById('playBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const youtubeFrame = document.getElementById('youtubeFrame');
+      let audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+      let analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      let bufferLength = analyser.frequencyBinCount;
+      let dataArray = new Uint8Array(bufferLength);
+      let sourceNode;
+      let analyserLeft, analyserRight;
+      let gainNode = audioCtx.createGain();
+      let currentBuffer;
+      let startTime = 0;
+      let pausedAt = 0;
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.onresize = resizeCanvas;
+      resizeCanvas();
+      settingsToggle.onclick = () => {
+        settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'flex' : 'none';
       };
-      reader.readAsArrayBuffer(file);
-    });
-
-    // YouTube loader
-    function loadYouTube() {
-      const url = document.getElementById('youtubeURL').value;
-      const videoId = url.split('v=')[1]?.split('&')[0];
-      if (!videoId) return;
-
-      video.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1`;
-      video.crossOrigin = "anonymous";
-      video.style.display = "block";
-      video.volume = volumeSlider.value;
-      video.play();
-
-      if (sourceNode) sourceNode.disconnect();
-      const mediaSource = audioCtx.createMediaElementSource(video);
-      mediaSource.connect(analyser);
-      analyser.connect(audioCtx.destination);
-      draw();
-    }
-
-    // Visualization
-    function draw() {
-  requestAnimationFrame(draw);
-  const mode = document.getElementById('modeSelect').value;
-  const bgColor = document.getElementById('bgColor').value;
-  const barColor = document.getElementById('barColor').value;
-
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  if (mode === 'bars') {
-    analyser.getByteFrequencyData(dataArray);
-    const barWidth = (canvas.width / bufferLength) * 2.5;
-    let x = 0;
-    for (let i = 0; i < bufferLength; i++) {
-      const barHeight = dataArray[i];
-      ctx.fillStyle = barColor;
-      ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-      x += barWidth + 1;
-    }
-  } else if (mode === 'waveform') {
-    analyser.getByteTimeDomainData(dataArray);
-    ctx.beginPath();
-    ctx.strokeStyle = barColor;
-    ctx.lineWidth = 2;
-    for (let i = 0; i < bufferLength; i++) {
-      const x = (i / bufferLength) * canvas.width;
-      const y = (dataArray[i] / 255.0) * canvas.height;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  } else if (mode === 'circle') {
-    analyser.getByteFrequencyData(dataArray);
-    const radius = Math.min(canvas.width, canvas.height) / 4;
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    for (let i = 0; i < bufferLength; i++) {
-      const angle = (i / bufferLength) * 2 * Math.PI;
-      const length = dataArray[i];
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
-      const x2 = centerX + Math.cos(angle) * (radius + length);
-      const y2 = centerY + Math.sin(angle) * (radius + length);
-      ctx.strokeStyle = barColor;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-    }
-  } else if (mode === 'particles') {
-    analyser.getByteFrequencyData(dataArray);
-    for (let i = 0; i < bufferLength; i++) {
-      const radius = dataArray[i] / 5;
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = barColor;
-      ctx.fill();
-    }
-  } else if (mode === 'gonio') {
-    analyser.getByteTimeDomainData(dataArray);
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const scale = canvas.height / 2;
-
-    ctx.strokeStyle = barColor;
-    ctx.lineWidth = 1;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = barColor;
-
-    for (let i = 0; i < bufferLength - 1; i++) {
-      const x1 = ((dataArray[i] - 128) / 128) * scale;
-      const y1 = ((dataArray[i + 1] - 128) / 128) * scale;
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(centerX + x1, centerY + y1);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(centerX - x1, centerY - y1); // mirrored
-      ctx.stroke();
-    }
-
-    ctx.shadowBlur = 0;
-  }
-}
-
-
-
-    // Volume control
-    volumeSlider.oninput = () => {
-      if (video) video.volume = volumeSlider.value;
-    };
-  </script>
-</body>
+      document.getElementById('audioFile').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          audioCtx.decodeAudioData(e.target.result, function(buffer) {
+            currentBuffer = buffer;
+            setupStereoAnalyzers(buffer);
+            playBuffer(buffer);
+          });
+        };
+        reader.readAsArrayBuffer(file);
+      });
+      function setupStereoAnalyzers(buffer) {
+        const splitter = audioCtx.createChannelSplitter(2);
+        analyserLeft = audioCtx.createAnalyser();
+        analyserRight = audioCtx.createAnalyser();
+        analyserLeft.fftSize = 512;
+        analyserRight.fftSize = 512;
+        sourceNode = audioCtx.createBufferSource();
+        sourceNode.buffer = buffer;
+        sourceNode.connect(splitter);
+        splitter.connect(analyserLeft, 0);
+        splitter.connect(analyserRight, 1);
+        splitter.connect(analyser, 0);
+        analyser.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        gainNode.gain.value = volumeSlider.value;
+      }
+      function playBuffer(buffer, offset = 0) {
+        // Stop previous sourceNode if it's playing
+        if (sourceNode) {
+          try {
+            sourceNode.stop();
+          } catch (e) {
+            // Already stopped or never started — safe to ignore
+          }
+        }
+        // Create new sourceNode
+        sourceNode = audioCtx.createBufferSource();
+        sourceNode.buffer = buffer;
+        const splitter = audioCtx.createChannelSplitter(2);
+        analyserLeft = audioCtx.createAnalyser();
+        analyserRight = audioCtx.createAnalyser();
+        analyserLeft.fftSize = 512;
+        analyserRight.fftSize = 512;
+        sourceNode.connect(splitter);
+        splitter.connect(analyserLeft, 0);
+        splitter.connect(analyserRight, 1);
+        splitter.connect(analyser, 0);
+        analyser.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        gainNode.gain.value = volumeSlider.value;
+        sourceNode.start(0, offset);
+        startTime = audioCtx.currentTime - offset;
+        draw();
+      }
+      playBtn.onclick = () => {
+        if (!currentBuffer) return;
+        playBuffer(currentBuffer, pausedAt);
+      };
+      pauseBtn.onclick = () => {
+        if (sourceNode) {
+          sourceNode.stop();
+          pausedAt = audioCtx.currentTime - startTime;
+        }
+      };
+      volumeSlider.addEventListener('input', () => {
+        gainNode.gain.value = volumeSlider.value;
+      });
+      setInterval(() => {
+        if (currentBuffer && sourceNode) {
+          const duration = currentBuffer.duration;
+          const currentTime = audioCtx.currentTime - startTime;
+          seekBar.value = (currentTime / duration) * 100;
+        }
+      }, 500);
+      seekBar.addEventListener('input', () => {
+        if (currentBuffer) {
+          const seekTime = (seekBar.value / 100) * currentBuffer.duration;
+          if (sourceNode) sourceNode.stop();
+          playBuffer(currentBuffer, seekTime);
+        }
+      });
+      function loadYouTube() {
+        const url = document.getElementById('youtubeURL').value;
+        const videoId = url.split('v=')[1]?.split('&')[0];
+        if (!videoId) return;
+        youtubeFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        youtubeFrame.style.display = 'block';
+        // Note: Cannot analyze YouTube audio due to browser restrictions
+      }
+      function draw() {
+        requestAnimationFrame(draw);
+        const mode = document.getElementById('modeSelect').value;
+        const bgColor = document.getElementById('bgColor').value;
+        const barColor = document.getElementById('barColor').value;
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (mode === 'bars') {
+          analyser.getByteFrequencyData(dataArray);
+          const barWidth = (canvas.width / bufferLength) * 2.5;
+          let x = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            const barHeight = dataArray[i];
+            ctx.fillStyle = barColor;
+            ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+            x += barWidth + 1;
+          }
+        } else if (mode === 'waveform') {
+          analyser.getByteTimeDomainData(dataArray);
+          ctx.beginPath();
+          ctx.strokeStyle = barColor;
+          ctx.lineWidth = 2;
+          for (let i = 0; i < bufferLength; i++) {
+            const x = (i / bufferLength) * canvas.width;
+            const y = (dataArray[i] / 255.0) * canvas.height;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        } else if (mode === 'circle') {
+          analyser.getByteFrequencyData(dataArray);
+          const radius = Math.min(canvas.width, canvas.height) / 4;
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          for (let i = 0; i < bufferLength; i++) {
+            const angle = (i / bufferLength) * 2 * Math.PI;
+            const length = dataArray[i];
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            const x2 = centerX + Math.cos(angle) * (radius + length);
+            const y2 = centerY + Math.sin(angle) * (radius + length);
+            ctx.strokeStyle = barColor;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+          }
+        } else if (mode === 'particles') {
+          analyser.getByteFrequencyData(dataArray);
+          for (let i = 0; i < bufferLength; i++) {
+            const radius = dataArray[i] / 5;
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = barColor;
+            ctx.fill();
+          }
+        } else if (mode === 'gonio') {
+          if (!analyserLeft || !analyserRight) return;
+          const bufferLength = analyserLeft.fftSize;
+          const dataLeft = new Uint8Array(bufferLength);
+          const dataRight = new Uint8Array(bufferLength);
+          analyserLeft.getByteTimeDomainData(dataLeft);
+          analyserRight.getByteTimeDomainData(dataRight);
+          const scale = Math.min(canvas.width, canvas.height) / 2.5;
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          ctx.scale(1, -1); // Flip Y for oscilloscope-style feel
+          ctx.beginPath();
+          ctx.strokeStyle = barColor;
+          ctx.lineWidth = 1.5;
+          for (let i = 0; i < bufferLength; i++) {
+            const x = ((dataLeft[i] - 128) / 128) * scale;
+            const y = ((dataRight[i] - 128) / 128) * scale;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+          ctx.restore();
+          // Optional: draw crosshair
+          ctx.strokeStyle = "#444";
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(centerX - scale, centerY);
+          ctx.lineTo(centerX + scale, centerY);
+          ctx.moveTo(centerX, centerY - scale);
+          ctx.lineTo(centerX, centerY + scale);
+          ctx.stroke();
+        }
+      }
+    </script>
+  </body>
 </html>
