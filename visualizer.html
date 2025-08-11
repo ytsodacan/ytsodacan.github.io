@@ -18,7 +18,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        height: 100%;
+        height: 50vh;
         width: 100%;
       }
 
@@ -110,8 +110,8 @@
       let pausedAt = 0;
 
       function resizeCanvas() {
-        //canvas.width = window.innerWidth;
-        //canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
       window.onresize = resizeCanvas;
       resizeCanvas();
