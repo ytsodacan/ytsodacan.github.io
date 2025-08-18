@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wplace Palette Pixel Remapper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #161a22;
+      --muted: #8a90a2;
+      --text: #e6e8ee;
+      --accent: #4f8cff;
+      --accent-2: #22c55e;
+      --border: #262b36;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #0f1115, #0b0d12);
+      color: var(--text);
+      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
+    }
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15,17,21,0.7);
+      backdrop-filter: blur(6px);
+      position: sticky; top: 0; z-index: 10;
+    }
+    header h1 { margin: 0; font-size: 18px; }
+    main { padding: 20px; display: grid; gap: 16px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: clip;
+    }
+    .card h2 {
+      margin: 0;
+      padding: 12px 14px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      color: #cdd3e0;
+      background: #121620;
+    }
+    .card .body { padding: 14px; display: grid; gap: 12px; }
+
+    .drop {
+      border: 2px dashed #2b3242;
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      transition: 0.2s border-color, 0.2s background;
+      cursor: pointer;
+    }
+    .drop strong { color: #d8dcee; }
+    .drop.drag { border-color: var(--accent); background: rgba(79,140,255,0.08); }
+
+    .controls { display: grid; gap: 10px; }
+    .row { display: grid; gap: 8px; }
+    .row.inline { grid-template-columns: 1fr auto; align-items: center; }
+    label { color: #cfd3e2; font-weight: 600; }
+    .hint { color: var(--muted); font-size: 12px; }
+
+    .seg {
+      display: inline-flex; background: #0f1320; border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .seg button {
+      padding: 8px 10px; background: transparent; color: #cfd3e2; border: 0; cursor: pointer;
+    }
+    .seg button.active { background: var(--accent); color: white; }
+    .seg button:not(:last-child) { border-right: 1px solid var(--border); }
+
+    input[type="range"] { width: 100%; }
+    .btn {
+      appearance: none; border: 1px solid var(--border); background: #111522;
+      color: #e8ecf5; padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    }
+    .btn.primary { background: var(--accent); border-color: transparent; }
+    .btn.success { background: var(--accent-2); border-color: transparent; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btnbar { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .viewer {
+      display: grid; gap: 12px; padding: 12px;
+    }
+    .canvas-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    @media (max-width: 900px) {
+      .canvas-row { grid-template-columns: 1fr; }
+    }
+    .canvas-wrap {
+      background: #0b0e16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: auto;
+      position: relative;
+      height: min(70vh, 900px);
+    }
+    .canvas-inner {
+      transform-origin: top left;
+      image-rendering: pixelated;
+      display: inline-block;
+    }
+    canvas { display: block; }
+
+    .bar {
+      height: 8px; background: #0e1320; border-radius: 999px;
+      border: 1px solid var(--border); overflow: hidden;
+    }
+    .bar > span { display: block; height: 100%; width: 0%; background: var(--accent-2); transition: width 0.1s; }
+
+    footer { color: var(--muted); padding: 0 14px 14px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Wplace Palette Pixel Remapper</h1>
+  </header>
+
+  <main>
+    <div class="layout">
+      <section class="card">
+        <h2>Input & controls</h2>
+        <div class="body">
+          <div id="drop" class="drop">
+            <input id="file" type="file" accept="image/*" hidden />
+            <div>Drag & drop an image here, or <strong>click to browse</strong></div>
+            <div class="hint">PNG/JPG. Large images may take a moment.</div>
+          </div>
+
+          <div class="controls">
+            <div class="row">
+              <label>Mode</label>
+              <div class="seg" role="tablist" aria-label="Mode">
+                <button id="mode-remap" class="active" aria-pressed="true">Remap (original detail)</button>
+                <button id="mode-pixel">Pixelate blocks</button>
+              </div>
+              <div id="pixel-size-row" class="row" style="display:none;">
+                <label for="pixelSize">Block size</label>
+                <input id="pixelSize" type="range" min="2" max="50" value="10" />
+                <div class="hint"><span id="pxVal">10</span> px blocks</div>
+              </div>
+            </div>
+
+            <div class="row">
+              <label for="zoom">Zoom</label>
+              <input id="zoom" type="range" min="25" max="300" value="100" />
+              <div class="hint"><span id="zoomVal">100</span>% (visual only)</div>
+            </div>
+
+            <div class="row inline">
+              <div class="btnbar">
+                <button id="btnRender" class="btn primary" disabled>Render</button>
+                <button id="btnDownload" class="btn success" disabled>Download PNG</button>
+              </div>
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input id="compare" type="checkbox" />
+                Side-by-side compare
+              </label>
+            </div>
+
+            <div class="row">
+              <label>Progress</label>
+              <div class="bar"><span id="progress" style="width:0%"></span></div>
+              <div id="status" class="hint">Load an image to begin.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Preview</h2>
+        <div class="viewer">
+          <div id="single" class="canvas-wrap">
+            <div class="canvas-inner" id="innerSingle">
+              <canvas id="canvasOut"></canvas>
+            </div>
+          </div>
+
+          <div id="dual" class="canvas-row" style="display:none;">
+            <div class="canvas-wrap">
+              <div class="canvas-inner" id="innerOrig">
+                <canvas id="canvasOrig"></canvas>
+              </div>
+              <footer>Original</footer>
+            </div>
+            <div class="canvas-wrap">
+              <div class="canvas-inner" id="innerOut">
+                <canvas id="canvasOut2"></canvas>
+              </div>
+              <footer>Remapped</footer>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Wplace Palette (Free Colours) — 31 colors from your file
+    const paletteHex = [
+      "#000000","#3c3c3c","#787878","#d2d2d2","#ffffff",
+      "#600018","#ed1c24","#ff7f27","#f6aa09","#f9dd3b",
+      "#fffabc","#0eb968","#13e67b","#87ff5e","#0c816e",
+      "#10aea6","#13e1be","#28509e","#4093e4","#60f7f2",
+      "#6b50f6","#99b1fb","#780c99","#aa38b9","#e09ff9",
+      "#cb007a","#ec1f80","#f38da9","#684634","#95682a",
+      "#f8b277"
+    ];
+
+    // UI elements
+    const drop = document.getElementById('drop');
+    const fileInput = document.getElementById('file');
+    const modeRemapBtn = document.getElementById('mode-remap');
+    const modePixelBtn = document.getElementById('mode-pixel');
+    const pixelSizeRow = document.getElementById('pixel-size-row');
+    const pixelSize = document.getElementById('pixelSize');
+    const pxVal = document.getElementById('pxVal');
+    const zoom = document.getElementById('zoom');
+    const zoomVal = document.getElementById('zoomVal');
+    const compare = document.getElementById('compare');
+    const statusEl = document.getElementById('status');
+    const progressEl = document.getElementById('progress');
+    const btnRender = document.getElementById('btnRender');
+    const btnDownload = document.getElementById('btnDownload');
+
+    // Canvas elements
+    const canvasOrig = document.getElementById('canvasOrig');
+    const ctxOrig = canvasOrig.getContext('2d');
+    const canvasOutSingle = document.getElementById('canvasOut');
+    const ctxOutSingle = canvasOutSingle.getContext('2d');
+    const canvasOutDual = document.getElementById('canvasOut2');
+    const ctxOutDual = canvasOutDual.getContext('2d');
+
+    const innerSingle = document.getElementById('innerSingle');
+    const innerOrig = document.getElementById('innerOrig');
+    const innerOut = document.getElementById('innerOut');
+
+    // State
+    let img = null;
+    let mode = 'remap'; // 'remap' or 'pixel'
+    let lastOutCanvas = canvasOutSingle;
+
+    // Helpers
+    const palette = paletteHex.map(hexToRgb);
+    const cache = new Map(); // quantized RGB -> [r,g,b] nearest
+    function hexToRgb(hex) {
+      const n = parseInt(hex.slice(1), 16);
+      return [(n>>16)&255,(n>>8)&255,n&255];
+    }
+    function quantKey(r,g,b) {
+      // 5 bits per channel quantization to accelerate caching (0..31)
+      return ((r>>3)<<10)|((g>>3)<<5)|(b>>3);
+    }
+    function distSq(r,g,b, pr,pg,pb) {
+      // Weighted RGB distance (perceptual-ish)
+      const dr = r - pr, dg = g - pg, db = b - pb;
+      return 0.299*dr*dr + 0.587*dg*dg + 0.114*db*db;
+    }
+    function nearestPalette(r,g,b) {
+      const key = quantKey(r,g,b);
+      const hit = cache.get(key);
+      if (hit) return hit;
+      let best = palette[0], bestD = Infinity;
+      for (let i=0;i<palette.length;i++) {
+        const p = palette[i];
+        const d = distSq(r,g,b, p[0],p[1],p[2]);
+        if (d < bestD) { bestD = d; best = p; }
+      }
+      cache.set(key, best);
+      return best;
+    }
+
+    function setStatus(text) { statusEl.textContent = text; }
+    function setProgress(pct) { progressEl.style.width = pct + '%'; }
+
+    function setZoom(percent) {
+      const scale = percent/100;
+      innerSingle.style.transform = `scale(${scale})`;
+      innerOrig.style.transform = `scale(${scale})`;
+      innerOut.style.transform = `scale(${scale})`;
+      zoomVal.textContent = percent;
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      modeRemapBtn.classList.toggle('active', mode === 'remap');
+      modePixelBtn.classList.toggle('active', mode === 'pixel');
+      modeRemapBtn.setAttribute('aria-pressed', mode === 'remap');
+      modePixelBtn.setAttribute('aria-pressed', mode === 'pixel');
+      pixelSizeRow.style.display = mode === 'pixel' ? '' : 'none';
+    }
+
+    function toggleCompare(show) {
+      document.getElementById('single').style.display = show ? 'none' : '';
+      document.getElementById('dual').style.display = show ? '' : 'none';
+      lastOutCanvas = show ? canvasOutDual : canvasOutSingle;
+    }
+
+    // Image loading
+    drop.addEventListener('click', () => fileInput.click());
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('drag'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+    drop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      drop.classList.remove('drag');
+      const f = e.dataTransfer.files?.[0];
+      if (f) handleFile(f);
+    });
+    fileInput.addEventListener('change', () => {
+      const f = fileInput.files?.[0];
+      if (f) handleFile(f);
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        setStatus('Please select an image file.');
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      const image = new Image();
+      image.onload = () => {
+        img = image;
+        URL.revokeObjectURL(url);
+        drawOriginal();
+        btnRender.disabled = false;
+        btnDownload.disabled = true;
+        setStatus(`Loaded ${file.name} — ${img.width}×${img.height}`);
+        setProgress(0);
+      };
+      image.src = url;
+    }
+
+    function drawOriginal() {
+      if (!img) return;
+      canvasOrig.width = img.width;
+      canvasOrig.height = img.height;
+      ctxOrig.clearRect(0,0,canvasOrig.width, canvasOrig.height);
+      ctxOrig.drawImage(img, 0, 0);
+      // Also show original in single view until render
+      canvasOutSingle.width = img.width;
+      canvasOutSingle.height = img.height;
+      ctxOutSingle.clearRect(0,0,canvasOutSingle.width, canvasOutSingle.height);
+      ctxOutSingle.drawImage(img, 0, 0);
+      // And reset dual out canvas size
+      canvasOutDual.width = img.width;
+      canvasOutDual.height = img.height;
+      ctxOutDual.clearRect(0,0,canvasOutDual.width, canvasOutDual.height);
+    }
+
+    // Rendering
+    modeRemapBtn.addEventListener('click', () => setMode('remap'));
+    modePixelBtn.addEventListener('click', () => setMode('pixel'));
+    pixelSize.addEventListener('input', () => { pxVal.textContent = pixelSize.value; });
+
+    compare.addEventListener('change', () => toggleCompare(compare.checked));
+    zoom.addEventListener('input', () => setZoom(zoom.value));
+
+    btnRender.addEventListener('click', async () => {
+      if (!img) return;
+      btnRender.disabled = true;
+      setProgress(0);
+      setStatus('Rendering…');
+      try {
+        if (mode === 'remap') {
+          await renderRemap();
+        } else {
+          await renderPixelate(parseInt(pixelSize.value,10));
+        }
+        btnDownload.disabled = false;
+        setStatus('Done.');
+      } catch (err) {
+        console.error(err);
+        setStatus('Error during rendering.');
+      } finally {
+        btnRender.disabled = false;
+      }
+    });
+
+    btnDownload.addEventListener('click', () => {
+      if (!lastOutCanvas) return;
+      const a = document.createElement('a');
+      a.download = `wplace-remap-${Date.now()}.png`;
+      a.href = lastOutCanvas.toDataURL('image/png');
+      a.click();
+    });
+
+    async function renderRemap() {
+      // Remap every pixel to nearest palette at original resolution
+      const w = img.width, h = img.height;
+      const tmp = document.createElement('canvas');
+      tmp.width = w; tmp.height = h;
+      const tctx = tmp.getContext('2d', { willReadFrequently: true });
+      tctx.drawImage(img, 0, 0);
+      const src = tctx.getImageData(0,0,w,h);
+      const dst = tctx.createImageData(w, h);
+      await processPixelsChunked(src.data, dst.data, w, h);
+      const outCtx = (lastOutCanvas === canvasOutDual) ? ctxOutDual : ctxOutSingle;
+      const outCanvas = (lastOutCanvas === canvasOutDual) ? canvasOutDual : canvasOutSingle;
+      outCanvas.width = w; outCanvas.height = h;
+      outCtx.putImageData(dst, 0, 0);
+    }
+
+    async function renderPixelate(block) {
+      // Downscale -> remap -> upscale to original size without smoothing
+      const w = img.width, h = img.height;
+      const dw = Math.max(1, Math.floor(w / block));
+      const dh = Math.max(1, Math.floor(h / block));
+      const down = document.createElement('canvas');
+      down.width = dw; down.height = dh;
+      const dctx = down.getContext('2d', { willReadFrequently: true });
+      dctx.imageSmoothingEnabled = true;
+      dctx.drawImage(img, 0, 0, dw, dh);
+
+      // Remap small image to palette
+      const src = dctx.getImageData(0,0,dw,dh);
+      const dst = dctx.createImageData(dw, dh);
+      await processPixelsChunked(src.data, dst.data, dw, dh);
+
+      // Draw upscaled
+      const outCtx = (lastOutCanvas === canvasOutDual) ? ctxOutDual : ctxOutSingle;
+      const outCanvas = (lastOutCanvas === canvasOutDual) ? canvasOutDual : canvasOutSingle;
+      outCanvas.width = w; outCanvas.height = h;
+      outCtx.imageSmoothingEnabled = false;
+      // Put remapped small image back then upscale
+      dctx.putImageData(dst, 0, 0);
+      outCtx.clearRect(0,0,w,h);
+      outCtx.drawImage(down, 0, 0, w, h);
+    }
+
+    function processPixelsChunked(src, dst, w, h) {
+      return new Promise((resolve) => {
+        const total = w * h;
+        let i = 0;
+        const CHUNK = 120000; // pixels per frame chunk (~480KB)
+        function step() {
+          const start = i;
+          const end = Math.min(total, start + CHUNK);
+          for (let p = start; p < end; p++) {
+            const j = p * 4;
+            const r = src[j], g = src[j+1], b = src[j+2], a = src[j+3];
+            if (a === 0) {
+              dst[j] = 0; dst[j+1] = 0; dst[j+2] = 0; dst[j+3] = 0;
+            } else {
+              const [nr,ng,nb] = nearestPalette(r,g,b);
+              dst[j] = nr; dst[j+1] = ng; dst[j+2] = nb; dst[j+3] = 255;
+            }
+          }
+          i = end;
+          const pct = Math.round((i / total) * 100);
+          setProgress(pct);
+          if (i < total) {
+            requestAnimationFrame(step);
+          } else {
+            resolve();
+          }
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    // Defaults
+    setZoom(100);
+    setMode('remap');
+  </script>
+</body>
+</html>
