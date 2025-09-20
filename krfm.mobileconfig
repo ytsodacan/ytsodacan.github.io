@@ -28,7 +28,7 @@
             <key>Precomposed</key>
             <true/>
             <key>URL</key>
-            <string>https://krrfm.org.au/player/</string>
+            <string>http://player.sw.arm.fm</string>
         </dict>
     </array>
     <key>PayloadDescription</key>
