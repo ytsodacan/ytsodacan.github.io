@@ -63,6 +63,14 @@
             <div class="world-meta">Version: 1.8.8</div>
           </div>
         </div>
+        <div class="world-entry" data-world="eagler" onclick="selectWorld(this)">
+          <div class="thumbnail"></div>
+          <div class="world-info">
+            <div class="world-name">Eaglercraft</div>
+            <div class="world-meta"></div>
+            <div class="world-meta">Modded, Version: 1.12</div>
+          </div>
+        </div>
       </div>
       <div
         style="position: absolute; left: 0; right: 0; bottom: 70px; display: flex; flex-direction: row; justify-content: center; align-items: center; width: 100%;">
@@ -201,6 +209,9 @@
     } else if (selectedWorld === "starlike") {
 
       window.location.href = "ver/starlike.html";
+    } else if (selectedWorld === "eagler") {
+
+      window.location.href = "ver/forge112.html";
     } else {
       alert("Unknown client: " + selectedWorld);
     }
