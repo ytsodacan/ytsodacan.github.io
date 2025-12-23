@@ -1,0 +1,32 @@
+Hockey Ranked (“we,” “our,” or “the Bot”) respects your privacy. This Privacy Policy explains what information we collect, how we use it, and your rights regarding your data.
+
+1. Information We Collect
+	•	User-Provided Information: Your Discord username, user ID, and any data you provide to the bot (e.g., game scores, team selections, or rank-related inputs).
+	•	Automatically Collected Information: Messages or interactions with the bot, timestamps of commands, and server ID for ranking purposes.
+	•	Non-Personal Analytics: Aggregated statistics about bot usage and rankings.
+
+2. How We Use Your Data
+	•	Track player ranks and leaderboard positions.
+	•	Display statistics and rankings within the bot.
+	•	Prevent abuse or cheating in rankings.
+	•	Improve and maintain bot functionality.
+	•	Analyze usage trends for bot improvements.
+
+3. Data Sharing
+	•	We do not sell or rent your personal information.
+	•	Data may be shared with trusted third-party services (e.g., hosting providers) to operate the bot.
+	•	Your data may be disclosed if required by law or to enforce Terms & Conditions.
+
+4. Data Retention
+	•	Player rankings and relevant data are stored until the user requests deletion or the bot is decommissioned.
+	•	Aggregated analytics may be retained for bot improvement purposes.
+
+5. User Rights
+	•	You may request deletion of your data by contacting [insert contact email or Discord].
+	•	You can revoke bot access from your server, which will stop the collection of new data.
+
+6. Security
+	•	We take reasonable measures to protect your data, but no system is completely secure.
+
+7. Changes to This Policy
+	•	We may update this policy occasionally. The latest version will always be available on this site.
