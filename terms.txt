@@ -1,0 +1,33 @@
+By using Hockey Ranked (“the Bot”), you agree to these Terms & Conditions (“Terms”). If you do not agree, do not use the bot.
+
+1. Eligibility
+	•	You must be at least 13 years old (or meet your country’s minimum age for online services).
+	•	You must comply with Discord’s Terms of Service￼.
+
+2. Bot Usage
+	•	The Bot provides ranking and statistics features for Discord servers.
+	•	You may not use the Bot for unlawful purposes or to harass, abuse, or exploit others.
+	•	You are responsible for the content you provide to the Bot.
+
+3. Rankings and Data
+	•	Rankings are calculated automatically from the information provided.
+	•	We do not guarantee accuracy and are not responsible for ranking errors.
+	•	We may remove or adjust scores in case of abuse or errors.
+
+4. Intellectual Property
+	•	The Bot, code, graphics, and content are owned by the developer.
+	•	You may not copy, distribute, or modify the Bot without permission.
+
+5. Limitation of Liability
+	•	The Bot is provided “as-is” without warranties.
+	•	We are not liable for any loss, damage, or inconvenience caused by the Bot or its use.
+
+6. Termination
+	•	We may remove the Bot from a server or terminate your use if Terms are violated.
+	•	Users may remove the Bot from their server at any time.
+
+7. Modifications
+	•	Terms may change from time to time. The latest version will be posted at [insert URL or pinned message].
+
+8. Governing Law
+	•	These Terms are governed by the laws of Australia
